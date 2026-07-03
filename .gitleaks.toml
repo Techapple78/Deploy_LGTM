@@ -1,0 +1,7 @@
+title = "Deploy_LGTM Gitleaks configuration"
+
+[allowlist]
+description = "SealedSecrets encryptedData is intentionally high entropy and safe to store in Git."
+paths = [
+  '''secrets/sealed/.*\.sealedsecret\.yaml$''',
+]

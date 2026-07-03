@@ -133,6 +133,12 @@ Jobs:
 | `secret-scan` | `gitleaks/gitleaks-action@v3.0.0` | Recherche secrets, tokens, cles privees dans l'historique checkout. |
 | `filesystem-scan` | `aquasecurity/trivy-action@v0.36.0` | Scan config/IaC avec severite `HIGH,CRITICAL`. |
 
+Configuration:
+
+- `.gitleaks.toml` ignore uniquement les manifests `secrets/sealed/*.sealedsecret.yaml`.
+- Ces fichiers contiennent des donnees chiffrees `SealedSecret`, attendues comme haute entropie.
+- Les autres chemins restent scannes.
+
 Ce que `security` bloque:
 
 - secret clair detecte;
