@@ -88,3 +88,8 @@ git push -u origin main
 ## Prochaine decision
 
 Installer ArgoCD et lancer la premiere synchronisation GitOps, ou attendre que le depot GitHub cible soit cree et pousse.
+
+## Documentation ajoutee apres analyse pods
+
+- `docs/pods-inventory.md`
+- `docs/roadmap-pilotage.md`

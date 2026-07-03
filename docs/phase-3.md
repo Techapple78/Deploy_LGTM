@@ -94,3 +94,8 @@ python -c "import yaml, pathlib; [print(p.name, list(yaml.safe_load_all(p.read_t
 - Confirmer le domaine Grafana reel.
 - Fournir ou generer le secret TLS `grafana-tls`.
 - Choisir la StorageClass definitive pour les PVC LGTM.
+
+## Documentation associee
+
+- Inventaire des pods et schemas: `docs/pods-inventory.md`
+- Roadmap et pilotage: `docs/roadmap-pilotage.md`

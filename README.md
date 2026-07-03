@@ -92,6 +92,8 @@ Pour importer les variables Terraform et secrets existants depuis `C:\Users\USER
 
 La phase 2 du MVP deployable controle est documentee dans [docs/phase-2.md](docs/phase-2.md).
 La phase 3 de pre-deploiement controle est documentee dans [docs/phase-3.md](docs/phase-3.md).
+L'inventaire des pods et les schemas de fonctionnement sont dans [docs/pods-inventory.md](docs/pods-inventory.md).
+La roadmap et le pilotage projet sont dans [docs/roadmap-pilotage.md](docs/roadmap-pilotage.md).
 
 ## Choix humains a confirmer
 
