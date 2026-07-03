@@ -12,6 +12,8 @@ mimir:
         dir: /data/blocks
       bucket_store:
         sync_dir: /data/tsdb-sync
+    ingest_storage:
+      enabled: false
     ruler_storage:
       backend: filesystem
       filesystem:
