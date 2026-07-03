@@ -38,6 +38,8 @@ minio:
   enabled: false
 gateway:
   enabled: true
+rollout_operator:
+  enabled: false
 
 ingester:
   replicas: 1
