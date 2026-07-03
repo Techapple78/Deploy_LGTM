@@ -68,6 +68,8 @@ Critere de sortie:
 
 ### Phase 4 - Publication et premiere synchronisation
 
+Etat: en cours.
+
 Objectif:
 
 - Verifier que `Techapple78/Deploy_LGTM` est accessible par ArgoCD.
@@ -80,6 +82,10 @@ Critere de sortie:
 - ArgoCD root app `Synced/Healthy`.
 - Grafana accessible via Traefik.
 - Datasources Loki/Mimir/Tempo visibles dans Grafana.
+
+Rapport de suivi:
+
+- `docs/reports/phase-4-first-gitops-sync.md`
 
 ### Phase 5 - Stabilisation production legere
 

@@ -16,6 +16,8 @@ mimir:
       data_dir: /data/compactor
     ingest_storage:
       enabled: false
+    ingester:
+      push_grpc_method_enabled: true
     ruler_storage:
       backend: filesystem
       filesystem:
