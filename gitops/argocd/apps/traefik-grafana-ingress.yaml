@@ -1,4 +1,4 @@
-apiVersion: argoproj.io/v1alpha1
+﻿apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
   name: traefik-grafana-ingress
@@ -8,7 +8,7 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: https://github.com/TechApple/Deploy_LGTM.git
+    repoURL: https://github.com/Techapple78/Deploy_LGTM.git
     targetRevision: main
     path: platform/networking/traefik
   destination:
@@ -18,3 +18,4 @@ spec:
     automated:
       prune: true
       selfHeal: true
+

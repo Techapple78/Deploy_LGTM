@@ -1,4 +1,4 @@
-# Rapport de validation Phase 3
+﻿# Rapport de validation Phase 3
 
 Date: 2026-07-03
 
@@ -62,34 +62,25 @@ Resultat:
 
 ## GitHub
 
-Creation du depot cible demandee:
+Depot cible:
 
 ```text
-TechApple/Deploy_LGTM
+https://github.com/Techapple78/Deploy_LGTM
 ```
 
 Etat:
 
 - `gh` est authentifie avec le compte `Techapple78`.
-- Le compte connecte n'a pas le droit de creer un repository sous l'owner `TechApple`.
-- Aucune organisation accessible n'a ete retournee par `gh api user/orgs`.
-- Aucun push distant n'a ete effectue.
-
-Action requise:
-
-1. Donner au compte `Techapple78` le droit de creer des repositories sous `TechApple`, ou
-2. Creer manuellement `TechApple/Deploy_LGTM`, puis lancer:
-
-```powershell
-git remote add origin https://github.com/TechApple/Deploy_LGTM.git
-git push -u origin main
-```
+- Le depot a ete cree sous l'owner utilisateur `Techapple78`.
+- La branche `main` a ete poussee.
+- Le remote local est `origin https://github.com/Techapple78/Deploy_LGTM.git`.
 
 ## Prochaine decision
 
-Installer ArgoCD et lancer la premiere synchronisation GitOps, ou attendre que le depot GitHub cible soit cree et pousse.
+Terminer l'iteration SEC-0, puis installer/synchroniser l'app-of-apps ArgoCD en iteration 4.
 
 ## Documentation ajoutee apres analyse pods
 
 - `docs/pods-inventory.md`
 - `docs/roadmap-pilotage.md`
+

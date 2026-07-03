@@ -7,6 +7,7 @@ metadata:
     pod-security.kubernetes.io/enforce: baseline
     pod-security.kubernetes.io/audit: restricted
     pod-security.kubernetes.io/warn: restricted
+    security.deploy-lgtm.io/restricted-ready: "false"
 ---
 apiVersion: v1
 kind: Namespace
@@ -14,6 +15,9 @@ metadata:
   name: kyverno
   labels:
     app.kubernetes.io/part-of: deploy-lgtm
+    pod-security.kubernetes.io/enforce: baseline
+    pod-security.kubernetes.io/audit: restricted
+    pod-security.kubernetes.io/warn: restricted
 ---
 apiVersion: v1
 kind: Namespace
@@ -21,3 +25,6 @@ metadata:
   name: argocd
   labels:
     app.kubernetes.io/part-of: deploy-lgtm
+    pod-security.kubernetes.io/enforce: baseline
+    pod-security.kubernetes.io/audit: restricted
+    pod-security.kubernetes.io/warn: restricted

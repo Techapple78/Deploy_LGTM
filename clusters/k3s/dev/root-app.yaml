@@ -1,4 +1,4 @@
-apiVersion: argoproj.io/v1alpha1
+﻿apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
   name: deploy-lgtm-root-dev
@@ -6,7 +6,7 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: https://github.com/TechApple/Deploy_LGTM.git
+    repoURL: https://github.com/Techapple78/Deploy_LGTM.git
     targetRevision: main
     path: gitops/argocd/apps
     directory:
@@ -20,3 +20,4 @@ spec:
       selfHeal: true
     syncOptions:
       - CreateNamespace=true
+

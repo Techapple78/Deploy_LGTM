@@ -1,4 +1,4 @@
-apiVersion: argoproj.io/v1alpha1
+﻿apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
   name: mimir
@@ -14,7 +14,7 @@ spec:
       helm:
         valueFiles:
           - $values/platform/lgtm/mimir/values.yaml
-    - repoURL: https://github.com/TechApple/Deploy_LGTM.git
+    - repoURL: https://github.com/Techapple78/Deploy_LGTM.git
       targetRevision: main
       ref: values
   destination:
@@ -26,3 +26,4 @@ spec:
       selfHeal: true
     syncOptions:
       - CreateNamespace=true
+

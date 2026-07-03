@@ -1,23 +1,20 @@
-﻿apiVersion: argoproj.io/v1alpha1
+apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: deploy-lgtm-root
+  name: observability-network-policies
   namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "5"
 spec:
   project: default
   source:
     repoURL: https://github.com/Techapple78/Deploy_LGTM.git
     targetRevision: main
-    path: gitops/argocd/apps
-    directory:
-      recurse: true
+    path: platform/security/network-policies
   destination:
     server: https://kubernetes.default.svc
-    namespace: argocd
+    namespace: observability
   syncPolicy:
     automated:
       prune: true
       selfHeal: true
-    syncOptions:
-      - CreateNamespace=true
-

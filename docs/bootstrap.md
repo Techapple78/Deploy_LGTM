@@ -1,4 +1,4 @@
-# Bootstrap
+﻿# Bootstrap
 
 ## Prerequis locaux
 
@@ -35,7 +35,7 @@ terraform version
 
 ```powershell
 git init
-gh repo create TechApple/Deploy_LGTM --private --source . --remote origin
+gh repo create Techapple78/Deploy_LGTM --private --source . --remote origin
 git add .
 git commit -m "Initial LGTM GitOps scaffold"
 git branch -M main
@@ -118,3 +118,4 @@ kubectl -n observability port-forward svc/grafana 3000:80
 ```
 
 Ouvrez `https://grafana.example.local` ou `http://localhost:3000` selon votre exposition.
+

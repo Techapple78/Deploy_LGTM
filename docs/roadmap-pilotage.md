@@ -1,4 +1,4 @@
-# Roadmap et pilotage du projet
+﻿# Roadmap et pilotage du projet
 
 ## Vision
 
@@ -32,7 +32,7 @@ Livrables:
 
 ### Phase 3 - Pre-deploiement controle
 
-Etat: termine partiellement, bloque uniquement par GitHub distant.
+Etat: termine.
 
 Livrables:
 
@@ -42,18 +42,38 @@ Livrables:
 - Git local initialise et commits crees.
 - Rapport de validation.
 
-Blocage:
+Depot GitHub:
 
-- Le compte GitHub courant ne peut pas creer `TechApple/Deploy_LGTM`.
+- `https://github.com/Techapple78/Deploy_LGTM`
+- Branche par defaut: `main`
+
+### Iteration SEC-0 - Durcissement avant premiere synchronisation
+
+Etat: en cours.
+
+Objectif:
+
+- Poser les garde-fous de securite avant l'application de l'app-of-apps LGTM.
+- Garder Kyverno en `Audit` pour observer avant enforcement.
+- Ajouter NetworkPolicies versionnees.
+- Ajouter SBOM et scan de dependances.
+- Clarifier TLS, PSA, signature d'images et criteres Go/No-Go.
+
+Critere de sortie:
+
+- `scripts/Test-Repository.ps1` vert.
+- CI security/render/sbom prete.
+- RepoURL ArgoCD aligne sur `Techapple78/Deploy_LGTM`.
+- Strategie TLS choisie avant exposition Grafana.
 
 ### Phase 4 - Publication et premiere synchronisation
 
 Objectif:
 
-- Creer/pousser `TechApple/Deploy_LGTM`.
+- Verifier que `Techapple78/Deploy_LGTM` est accessible par ArgoCD.
 - Connecter ArgoCD au depot.
 - Appliquer l'app-of-apps.
-- Verifier les applications ArgoCD `platform-namespaces`, `sealed-secrets`, `imported-sealed-secrets`, `kyverno`, `loki`, `mimir`, `tempo`, `grafana`, `alloy`, `traefik-grafana-ingress`.
+- Verifier les applications ArgoCD `platform-namespaces`, `sealed-secrets`, `imported-sealed-secrets`, `kyverno`, `observability-network-policies`, `loki`, `mimir`, `tempo`, `grafana`, `alloy`, `traefik-grafana-ingress`.
 
 Critere de sortie:
 
@@ -134,8 +154,9 @@ Regle simple:
 
 Phase 4:
 
-1. Corriger le droit GitHub ou creer manuellement `TechApple/Deploy_LGTM`.
-2. Pousser `main`.
-3. Verifier que les workflows GitHub Actions passent.
-4. Appliquer l'app-of-apps ArgoCD.
-5. Surveiller les pods LGTM et documenter l'inventaire post-sync.
+1. Terminer SEC-0.
+2. Verifier que les workflows GitHub Actions passent.
+3. Appliquer l'app-of-apps ArgoCD.
+4. Surveiller les pods LGTM et documenter l'inventaire post-sync.
+5. Ajuster les policies Kyverno/NetworkPolicy apres observation.
+

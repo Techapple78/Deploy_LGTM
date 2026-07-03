@@ -1,8 +1,8 @@
-# Deploy_LGTM
+﻿# Deploy_LGTM
 
 Deploy_LGTM est un socle GitOps pour deployer une stack LGTM sur un cluster Kubernetes K3S existant, heberge sur des VM vSphere ESXi.
 
-Le depot cible est `TechApple/Deploy_LGTM`. Le cluster K3S est considere deja operationnel. Terraform ne cree pas le cluster; il est reserve a des elements vSphere utiles et optionnels. GitHub Actions valide le contenu du depot, puis ArgoCD applique les changements depuis Git.
+Le depot cible est `Techapple78/Deploy_LGTM`. Le cluster K3S est considere deja operationnel. Terraform ne cree pas le cluster; il est reserve a des elements vSphere utiles et optionnels. GitHub Actions valide le contenu du depot, puis ArgoCD applique les changements depuis Git.
 
 ## Synthese d'architecture
 
@@ -63,7 +63,7 @@ Le depot cible est `TechApple/Deploy_LGTM`. Le cluster K3S est considere deja op
 ## Bootstrap rapide
 
 ```powershell
-gh repo create TechApple/Deploy_LGTM --private --source . --remote origin
+gh repo create Techapple78/Deploy_LGTM --private --source . --remote origin
 git init
 git add .
 git commit -m "Initial LGTM GitOps scaffold"
@@ -94,6 +94,7 @@ La phase 2 du MVP deployable controle est documentee dans [docs/phase-2.md](docs
 La phase 3 de pre-deploiement controle est documentee dans [docs/phase-3.md](docs/phase-3.md).
 L'inventaire des pods et les schemas de fonctionnement sont dans [docs/pods-inventory.md](docs/pods-inventory.md).
 La roadmap et le pilotage projet sont dans [docs/roadmap-pilotage.md](docs/roadmap-pilotage.md).
+Le plan de durcissement avant iteration 4 est dans [docs/security-hardening-plan.md](docs/security-hardening-plan.md).
 
 ## Choix humains a confirmer
 
@@ -136,3 +137,4 @@ Le projet suit une boucle courte: identification du besoin, modification du code
 3. Resilience: HA Loki/Mimir/Tempo, stockage objet, backups, tests de restauration.
 4. Securite: SSO Grafana avec Keycloak, rotation automatisee, signature d'images, SBOM.
 5. Exploitation: SLO, alerting, dashboards capacite, runbooks, tests de regression GitOps.
+

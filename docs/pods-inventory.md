@@ -1,4 +1,4 @@
-# Inventaire des pods lies au projet
+﻿# Inventaire des pods lies au projet
 
 Date: 2026-07-03
 
@@ -93,7 +93,7 @@ kubectl get pods -A -o wide
 
 ```mermaid
 flowchart LR
-  Dev[Operateur / Git commit] --> Git[TechApple/Deploy_LGTM]
+  Dev[Operateur / Git commit] --> Git[Techapple78/Deploy_LGTM]
   Git --> Repo[ArgoCD repo-server]
   Repo --> App[ArgoCD application-controller]
   App --> NS[Namespaces]
@@ -133,3 +133,4 @@ sequenceDiagram
 - `Deploy_LGTM` ne doit pas reutiliser de secrets CrewAI en clair; seuls les SealedSecrets sont versionnes.
 - La cle privee Sealed Secrets du cluster doit etre sauvegardee hors Git.
 - Le prochain deploiement reel sera la synchronisation ArgoCD de `Deploy_LGTM`.
+

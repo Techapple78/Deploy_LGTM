@@ -1,4 +1,4 @@
-# Architecture
+﻿# Architecture
 
 ## Objectif
 
@@ -29,7 +29,7 @@ Fournir un depot GitOps pour deployer une stack LGTM sur un cluster K3S existant
 - Le cluster K3S existe et `kubectl` y accede.
 - Une StorageClass compatible existe deja.
 - Traefik est installe par K3S ou deploye separement.
-- Le repository GitHub sera `https://github.com/TechApple/Deploy_LGTM`.
+- Le repository GitHub sera `https://github.com/Techapple78/Deploy_LGTM`.
 - Le namespace d'observabilite est `observability`.
 
 ## Decisions
@@ -38,3 +38,4 @@ Fournir un depot GitOps pour deployer une stack LGTM sur un cluster K3S existant
 - Terraform ne cree pas le cluster Kubernetes.
 - Les deploiements production passent par ArgoCD, pas par GitHub Actions.
 - Keycloak reste une option phase 2.
+

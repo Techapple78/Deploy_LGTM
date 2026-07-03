@@ -1,0 +1,36 @@
+name: sbom
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  generate-sbom:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Generate repository SBOM
+        uses: anchore/sbom-action@v0
+        with:
+          path: .
+          format: spdx-json
+          output-file: deploy-lgtm.spdx.json
+      - name: Upload SBOM
+        uses: actions/upload-artifact@v4
+        with:
+          name: deploy-lgtm-sbom
+          path: deploy-lgtm.spdx.json
+
+  dependency-scan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Trivy vulnerability scan
+        uses: aquasecurity/trivy-action@0.24.0
+        with:
+          scan-type: fs
+          scan-ref: .
+          hide-progress: true
+          severity: HIGH,CRITICAL
+          exit-code: "1"

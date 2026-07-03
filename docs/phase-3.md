@@ -1,4 +1,4 @@
-# Phase 3 - Pre-deploiement controle
+﻿# Phase 3 - Pre-deploiement controle
 
 ## Etat realise
 
@@ -41,7 +41,7 @@ Ces fichiers sont chiffres pour le cluster courant. Si la cle privee Sealed Secr
 Prerequis:
 
 - ArgoCD installe dans le namespace `argocd`.
-- Depot GitHub `TechApple/Deploy_LGTM` accessible par ArgoCD.
+- Depot GitHub `Techapple78/Deploy_LGTM` accessible par ArgoCD.
 - Branche `main` poussee.
 
 Commandes qui modifieront le cluster:
@@ -90,7 +90,7 @@ python -c "import yaml, pathlib; [print(p.name, list(yaml.safe_load_all(p.read_t
 ## Decisions restantes
 
 - Installer ArgoCD maintenant ou garder le depot pret.
-- Creer/pousser le depot GitHub `TechApple/Deploy_LGTM`.
+- Creer/pousser le depot GitHub `Techapple78/Deploy_LGTM`.
 - Confirmer le domaine Grafana reel.
 - Fournir ou generer le secret TLS `grafana-tls`.
 - Choisir la StorageClass definitive pour les PVC LGTM.
@@ -99,3 +99,5 @@ python -c "import yaml, pathlib; [print(p.name, list(yaml.safe_load_all(p.read_t
 
 - Inventaire des pods et schemas: `docs/pods-inventory.md`
 - Roadmap et pilotage: `docs/roadmap-pilotage.md`
+- Plan de durcissement SEC-0: `docs/security-hardening-plan.md`
+

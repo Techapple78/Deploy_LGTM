@@ -1,8 +1,9 @@
-# Checklist de validation post-deploiement
+﻿# Checklist de validation post-deploiement
 
 ## Git et CI
 
-- Le depot distant est `TechApple/Deploy_LGTM`.
+- Le depot distant est `Techapple78/Deploy_LGTM`.
+- Les repoURL ArgoCD pointent tous vers `https://github.com/Techapple78/Deploy_LGTM.git`.
 - Les workflows `lint`, `security` et `render` passent.
 - Aucun fichier ignore local n'apparait dans `git status --short`.
 - Aucun `Secret` Kubernetes en clair n'est versionne.
@@ -39,3 +40,4 @@
 - Kyverno est en mode `Audit` pour le MVP.
 - Les violations Kyverno sont examinees avant passage en `Enforce`.
 - Les manifests ne demandent pas de privilege inutile.
+
