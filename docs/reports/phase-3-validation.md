@@ -32,8 +32,8 @@ Ressources verifiees:
 
 ## SealedSecrets generes
 
-- `secrets/sealed/deploy-crewai-terraform-vars.sealedsecret.yaml`
-- `secrets/sealed/deploy-crewai-imported-secrets.sealedsecret.yaml`
+- `secrets/sealed/deploy-lgtm-terraform-vars.sealedsecret.yaml`
+- `secrets/sealed/deploy-lgtm-imported-secrets.sealedsecret.yaml`
 
 Les fichiers sont de type `SealedSecret` et chiffres pour la cle publique du controller installe sur le cluster courant.
 
@@ -83,4 +83,5 @@ Terminer l'iteration SEC-0, puis installer/synchroniser l'app-of-apps ArgoCD en 
 
 - `docs/pods-inventory.md`
 - `docs/roadmap-pilotage.md`
+
 

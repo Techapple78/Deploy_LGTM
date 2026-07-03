@@ -37,7 +37,7 @@ Etat: termine.
 Livrables:
 
 - Sealed Secrets installe sur K3S.
-- SealedSecrets generes depuis `source-project`.
+- SealedSecrets generes depuis une source locale autorisee.
 - Script de validation repository.
 - Git local initialise et commits crees.
 - Rapport de validation.
@@ -149,7 +149,7 @@ Regle simple:
 | Mauvais contexte kubectl | Deploiement sur mauvais cluster | Verification explicite du contexte avant commande mutable. |
 | Drift ArgoCD | Etat cluster divergent | Sync policy, alerting, revue ArgoCD. |
 | Storage local insuffisant | Perte ou saturation observabilite | Choisir StorageClass cible, retention, sauvegarde. |
-| ELK existant instable | Bruit operationnel | Suivi separe, migration progressive vers LGTM. |
+
 
 ## Prochaine iteration recommandee
 
@@ -160,4 +160,5 @@ Phase 4:
 3. Appliquer l'app-of-apps ArgoCD.
 4. Surveiller les pods LGTM et documenter l'inventaire post-sync.
 5. Ajuster les policies Kyverno/NetworkPolicy apres observation.
+
 

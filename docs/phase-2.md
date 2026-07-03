@@ -1,4 +1,4 @@
-# Phase 2 - MVP deployable controle
+﻿# Phase 2 - MVP deployable controle
 
 ## Objectif
 
@@ -11,7 +11,7 @@ Transformer le scaffold en MVP pret a etre applique, tout en gardant une barrier
 - Versions Helm pinnees dans ArgoCD et dans le workflow de rendu.
 - Sync waves ArgoCD ajoutees pour rendre l'ordre de deploiement explicite.
 - Module Terraform vSphere valide avec le provider `vmware/vsphere`.
-- Import local source-project disponible dans `secrets/tmp/deploy-crewai-imported-secrets.json`.
+- Import local disponible dans `secrets/tmp/`, ignore par Git.
 
 ## Ordre GitOps cible
 
@@ -37,7 +37,7 @@ Etat initial observe avant phase 3:
 services "sealed-secrets-controller" not found
 ```
 
-Cet etat est resolu. Les SealedSecrets importes depuis `source-project` ont ete generes dans `secrets/sealed/`.
+Cet etat est resolu. Les SealedSecrets importes ont ete generes dans `secrets/sealed/`.
 
 ## Commandes qui modifieraient le cluster
 
@@ -60,15 +60,15 @@ kubectl apply -k clusters/k3s/prod
 $env:PATH = (Resolve-Path '.\.tools').Path + ';' + $env:PATH
 
 .\scripts\import-secrets\generate-sealed-secrets.ps1 `
-  -InputFile '.\secrets\tmp\deploy-crewai-imported-secrets.json' `
+  -InputFile '.\secrets\tmp\imported-secrets.json' `
   -OutputDir '.\secrets\sealed' `
   -Namespace observability
 ```
 
 Fichiers attendus:
 
-- `secrets/sealed/deploy-crewai-terraform-vars.sealedsecret.yaml`
-- `secrets/sealed/deploy-crewai-imported-secrets.sealedsecret.yaml`
+- `secrets/sealed/deploy-lgtm-terraform-vars.sealedsecret.yaml`
+- `secrets/sealed/deploy-lgtm-imported-secrets.sealedsecret.yaml`
 
 ## Validations Phase 2
 
@@ -85,3 +85,4 @@ python -c "import yaml, pathlib; [list(yaml.safe_load_all(p.read_text(encoding='
 - Confirmer la StorageClass cible.
 - Decider si le `kubeconfig` importe doit rester local ou etre scelle pour un workload precis.
 - Definir la sauvegarde chiffree de la cle privee Sealed Secrets.
+

@@ -88,7 +88,7 @@ kubectl apply -f gitops/argocd/app-of-apps/root-app.yaml
 
 Les commandes detaillees sont dans [docs/bootstrap.md](docs/bootstrap.md).
 
-Pour importer les variables Terraform et secrets existants depuis `C:\Users\USER\Downloads\source-project`, voir [docs/source-deploy-crewai.md](docs/source-deploy-crewai.md). Les valeurs restent locales dans `secrets/tmp/` jusqu'a generation de SealedSecrets.
+Les secrets importes restent locaux dans `secrets/tmp/` jusqu'a generation de SealedSecrets.
 
 La phase 2 du MVP deployable controle est documentee dans [docs/phase-2.md](docs/phase-2.md).
 La phase 3 de pre-deploiement controle est documentee dans [docs/phase-3.md](docs/phase-3.md).
@@ -138,4 +138,5 @@ Le projet suit une boucle courte: identification du besoin, modification du code
 3. Resilience: HA Loki/Mimir/Tempo, stockage objet, backups, tests de restauration.
 4. Securite: SSO Grafana avec Keycloak, rotation automatisee, signature d'images, SBOM.
 5. Exploitation: SLO, alerting, dashboards capacite, runbooks, tests de regression GitOps.
+
 

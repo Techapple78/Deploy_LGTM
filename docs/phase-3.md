@@ -6,7 +6,7 @@
 - Cluster K3S joignable avec 4 noeuds `Ready`.
 - Sealed Secrets installe dans `kube-system`.
 - Controller attendu disponible: `sealed-secrets-controller`.
-- Secrets importes depuis `source-project` convertis en SealedSecrets.
+- Secrets importes depuis une source locale autorisee convertis en SealedSecrets.
 - Validation locale centralisee dans `scripts/Test-Repository.ps1`.
 
 ## Changements deja appliques au cluster
@@ -31,8 +31,8 @@ Ressources observees:
 
 Fichiers versionnables:
 
-- `secrets/sealed/deploy-crewai-terraform-vars.sealedsecret.yaml`
-- `secrets/sealed/deploy-crewai-imported-secrets.sealedsecret.yaml`
+- `secrets/sealed/deploy-lgtm-terraform-vars.sealedsecret.yaml`
+- `secrets/sealed/deploy-lgtm-imported-secrets.sealedsecret.yaml`
 
 Ces fichiers sont chiffres pour le cluster courant. Si la cle privee Sealed Secrets du cluster change, ils devront etre regeneres depuis la source locale autorisee.
 
@@ -73,7 +73,7 @@ Ensuite, corriger Git puis reactiver la sync automatisee.
 
 ## Rotation Sealed Secrets
 
-1. Mettre a jour la source locale dans `source-project` ou `C:\XXX`.
+1. Mettre a jour la source locale autorisee.
 2. Relancer l'import local.
 3. Relancer `generate-sealed-secrets.ps1`.
 4. Commiter uniquement les nouveaux fichiers `SealedSecret`.
@@ -100,4 +100,5 @@ python -c "import yaml, pathlib; [print(p.name, list(yaml.safe_load_all(p.read_t
 - Inventaire des pods et schemas: `docs/pods-inventory.md`
 - Roadmap et pilotage: `docs/roadmap-pilotage.md`
 - Plan de durcissement SEC-0: `docs/security-hardening-plan.md`
+
 

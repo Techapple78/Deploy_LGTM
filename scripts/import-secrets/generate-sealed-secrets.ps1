@@ -95,9 +95,9 @@ if ($data.profile -eq "DeployCrewAI") {
 
   if ($terraformItems.Count -gt 0) {
     New-SealedSecretFromFiles `
-      -SecretName "deploy-crewai-terraform-vars" `
+      -SecretName "deploy-lgtm-terraform-vars" `
       -Items $terraformItems `
-      -OutputFile (Join-Path $OutputDir "deploy-crewai-terraform-vars.sealedsecret.yaml")
+      -OutputFile (Join-Path $OutputDir "deploy-lgtm-terraform-vars.sealedsecret.yaml")
   }
 
   $fileItems = @()
@@ -110,12 +110,12 @@ if ($data.profile -eq "DeployCrewAI") {
 
   if ($fileItems.Count -gt 0) {
     New-SealedSecretFromFiles `
-      -SecretName "deploy-crewai-imported-secrets" `
+      -SecretName "deploy-lgtm-imported-secrets" `
       -Items $fileItems `
-      -OutputFile (Join-Path $OutputDir "deploy-crewai-imported-secrets.sealedsecret.yaml")
+      -OutputFile (Join-Path $OutputDir "deploy-lgtm-imported-secrets.sealedsecret.yaml")
   }
 
-  Write-Host "Generated source-project SealedSecrets in $OutputDir"
+  Write-Host "Generated Deploy_LGTM SealedSecrets in $OutputDir"
   return
 }
 
