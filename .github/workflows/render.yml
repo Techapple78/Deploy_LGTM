@@ -19,7 +19,13 @@ jobs:
       - name: Validate local Kubernetes YAML
         run: |
           find platform gitops clusters secrets -name '*.yaml' \
-            ! -path 'platform/lgtm/*/values.yaml' -print0 \
+            ! -path 'platform/lgtm/*/values.yaml' \
+            ! -path 'platform/security/kyverno-crds/*' \
+            ! -path 'platform/security/kyverno-crds/*/*' \
+            ! -path 'platform/security/kyverno-crds/*/*/*' \
+            ! -path 'platform/security/kyverno-crds/*/*/*/*' \
+            ! -path 'platform/security/kyverno-crds/*/*/*/*/*' \
+            -print0 \
             | xargs -0 kubeconform -summary -ignore-missing-schemas
 
   render-helm:
@@ -41,6 +47,7 @@ jobs:
           helm template mimir grafana/mimir-distributed --version 6.1.0 --namespace observability -f platform/lgtm/mimir/values.yaml > rendered/mimir.yaml
           helm template tempo grafana/tempo --version 1.24.4 --namespace observability -f platform/lgtm/tempo/values.yaml > rendered/tempo.yaml
           helm template alloy grafana/alloy --version 1.10.0 --namespace observability -f platform/lgtm/alloy/values.yaml > rendered/alloy.yaml
+          helm template kyverno-crds platform/security/kyverno-crds --namespace kyverno -f platform/security/kyverno-crds/values.yaml > rendered/kyverno-crds.yaml
       - name: Validate rendered YAML
         run: |
           curl -L -o kubeconform.tar.gz https://github.com/yannh/kubeconform/releases/download/v0.6.7/kubeconform-linux-amd64.tar.gz
