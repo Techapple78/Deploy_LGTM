@@ -1,0 +1,11 @@
+global:
+  templating:
+    enabled: false
+
+crds:
+  annotations:
+    argocd.argoproj.io/sync-options: ServerSideApply=true,Replace=true
+kyverno-api:
+  crds:
+    annotations:
+      argocd.argoproj.io/sync-options: ServerSideApply=true,Replace=true

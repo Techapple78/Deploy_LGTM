@@ -9,6 +9,26 @@ $ErrorActionPreference = "Stop"
 $repoRoot = Resolve-Path (Join-Path $PSScriptRoot "..")
 Set-Location $repoRoot
 
+function Invoke-HelmTemplate {
+  param(
+    [Parameter(Mandatory = $true)]
+    [string[]]$Arguments,
+    [Parameter(Mandatory = $true)]
+    [string]$OutputPath
+  )
+
+  $previousErrorActionPreference = $ErrorActionPreference
+  $ErrorActionPreference = "Continue"
+  $output = & helm @Arguments 2>&1
+  $exitCode = $LASTEXITCODE
+  $ErrorActionPreference = $previousErrorActionPreference
+  if ($exitCode -ne 0) {
+    $output | ForEach-Object { Write-Host $_ }
+    throw "Helm render failed: helm $($Arguments -join ' ')"
+  }
+  $output | Set-Content -LiteralPath $OutputPath -Encoding utf8
+}
+
 $toolsDir = Join-Path $repoRoot ".tools"
 if (Test-Path -LiteralPath $toolsDir) {
   $env:PATH = "$toolsDir;$env:PATH"
@@ -33,7 +53,10 @@ if ($failed) {
 }
 
 Write-Host "== YAML parse =="
-python -c "import yaml, pathlib; [list(yaml.safe_load_all(p.read_text(encoding='utf-8'))) for p in pathlib.Path('.').rglob('*.yaml') if 'secrets/tmp' not in str(p) and '.terraform' not in str(p) and '.tools' not in str(p)]; print('YAML parse OK')"
+python -c "import yaml, pathlib; [list(yaml.safe_load_all(p.read_text(encoding='utf-8'))) for p in pathlib.Path('.').rglob('*.yaml') if 'secrets/tmp' not in str(p) and 'rendered/' not in p.as_posix() and '.terraform' not in str(p) and '.tools' not in str(p) and '/charts/' not in p.as_posix()]; print('YAML parse OK')"
+if ($LASTEXITCODE -ne 0) {
+  throw "YAML parse validation failed"
+}
 
 Write-Host "== Kustomize =="
 kubectl kustomize clusters/k3s/dev | Out-Null
@@ -69,11 +92,12 @@ if (-not $SkipHelmRender) {
   Write-Host "== Helm render =="
   $renderDir = Join-Path $repoRoot "rendered"
   New-Item -ItemType Directory -Path $renderDir -Force | Out-Null
-  helm template grafana grafana/grafana --version 10.5.15 --namespace observability -f platform/lgtm/grafana/values.yaml > (Join-Path $renderDir "grafana.yaml")
-  helm template loki grafana/loki --version 7.0.0 --namespace observability -f platform/lgtm/loki/values.yaml > (Join-Path $renderDir "loki.yaml")
-  helm template mimir grafana/mimir-distributed --version 6.1.0 --namespace observability -f platform/lgtm/mimir/values.yaml > (Join-Path $renderDir "mimir.yaml")
-  helm template tempo grafana/tempo --version 1.24.4 --namespace observability -f platform/lgtm/tempo/values.yaml > (Join-Path $renderDir "tempo.yaml")
-  helm template alloy grafana/alloy --version 1.10.0 --namespace observability -f platform/lgtm/alloy/values.yaml > (Join-Path $renderDir "alloy.yaml")
+  Invoke-HelmTemplate -Arguments @("template", "grafana", "grafana/grafana", "--version", "10.5.15", "--namespace", "observability", "-f", "platform/lgtm/grafana/values.yaml") -OutputPath (Join-Path $renderDir "grafana.yaml")
+  Invoke-HelmTemplate -Arguments @("template", "loki", "grafana/loki", "--version", "7.0.0", "--namespace", "observability", "-f", "platform/lgtm/loki/values.yaml") -OutputPath (Join-Path $renderDir "loki.yaml")
+  Invoke-HelmTemplate -Arguments @("template", "mimir", "grafana/mimir-distributed", "--version", "6.1.0", "--namespace", "observability", "-f", "platform/lgtm/mimir/values.yaml") -OutputPath (Join-Path $renderDir "mimir.yaml")
+  Invoke-HelmTemplate -Arguments @("template", "tempo", "grafana/tempo", "--version", "1.24.4", "--namespace", "observability", "-f", "platform/lgtm/tempo/values.yaml") -OutputPath (Join-Path $renderDir "tempo.yaml")
+  Invoke-HelmTemplate -Arguments @("template", "alloy", "grafana/alloy", "--version", "1.10.0", "--namespace", "observability", "-f", "platform/lgtm/alloy/values.yaml") -OutputPath (Join-Path $renderDir "alloy.yaml")
+  Invoke-HelmTemplate -Arguments @("template", "kyverno-crds", "platform/security/kyverno-crds", "--namespace", "kyverno", "-f", "platform/security/kyverno-crds/values.yaml") -OutputPath (Join-Path $renderDir "kyverno-crds.yaml")
 }
 
 Write-Host "Repository validation OK"

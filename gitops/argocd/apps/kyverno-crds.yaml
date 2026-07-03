@@ -1,0 +1,26 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: kyverno-crds
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "-30"
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/Techapple78/Deploy_LGTM.git
+    targetRevision: main
+    path: platform/security/kyverno-crds
+    helm:
+      valueFiles:
+        - values.yaml
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: kyverno
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+      - ServerSideApply=true
