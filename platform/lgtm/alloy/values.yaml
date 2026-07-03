@@ -1,0 +1,56 @@
+controller:
+  type: daemonset
+
+alloy:
+  configMap:
+    create: true
+    content: |
+      logging {
+        level  = "info"
+        format = "logfmt"
+      }
+
+      discovery.kubernetes "pods" {
+        role = "pod"
+      }
+
+      loki.source.kubernetes "pods" {
+        targets    = discovery.kubernetes.pods.targets
+        forward_to = [loki.write.default.receiver]
+      }
+
+      loki.write "default" {
+        endpoint {
+          url = "http://loki-gateway.observability.svc.cluster.local/loki/api/v1/push"
+        }
+      }
+
+      prometheus.remote_write "mimir" {
+        endpoint {
+          url = "http://mimir-nginx.observability.svc.cluster.local/api/v1/push"
+        }
+      }
+
+      otelcol.receiver.otlp "default" {
+        grpc {}
+        http {}
+        output {
+          traces = [otelcol.exporter.otlp.tempo.input]
+        }
+      }
+
+      otelcol.exporter.otlp "tempo" {
+        client {
+          endpoint = "tempo.observability.svc.cluster.local:4317"
+          tls {
+            insecure = true
+          }
+        }
+      }
+
+resources:
+  requests:
+    cpu: 100m
+    memory: 128Mi
+  limits:
+    memory: 512Mi

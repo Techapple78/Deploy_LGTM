@@ -1,0 +1,41 @@
+replicas: 1
+
+admin:
+  existingSecret: grafana-admin
+  userKey: admin-user
+  passwordKey: admin-password
+
+service:
+  type: ClusterIP
+  port: 80
+
+persistence:
+  enabled: true
+  size: 10Gi
+
+datasources:
+  datasources.yaml:
+    apiVersion: 1
+    datasources:
+      - name: Loki
+        type: loki
+        access: proxy
+        url: http://loki-gateway.observability.svc.cluster.local
+        isDefault: false
+      - name: Mimir
+        type: prometheus
+        access: proxy
+        url: http://mimir-nginx.observability.svc.cluster.local/prometheus
+        isDefault: true
+      - name: Tempo
+        type: tempo
+        access: proxy
+        url: http://tempo.observability.svc.cluster.local:3100
+        isDefault: false
+
+resources:
+  requests:
+    cpu: 100m
+    memory: 256Mi
+  limits:
+    memory: 512Mi

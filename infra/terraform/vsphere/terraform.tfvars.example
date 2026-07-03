@@ -1,0 +1,14 @@
+vsphere_server       = "vcenter.example.local"
+vsphere_user         = "administrator@vsphere.local"
+allow_unverified_ssl = false
+
+datacenter = "DC01"
+cluster    = "Cluster01"
+datastore  = "Datastore01"
+network    = "VM Network"
+vm_folder  = "k3s"
+
+k3s_server_url = "https://k3s.example.local:6443"
+
+# Provide sensitive values locally, never in Git:
+# Use environment variables for the vSphere password and K3S token.

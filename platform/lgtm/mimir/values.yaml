@@ -1,0 +1,43 @@
+mimir:
+  structuredConfig:
+    multitenancy_enabled: false
+    common:
+      storage:
+        backend: filesystem
+        filesystem:
+          dir: /data
+    blocks_storage:
+      backend: filesystem
+      filesystem:
+        dir: /data/blocks
+      bucket_store:
+        sync_dir: /data/tsdb-sync
+    ruler_storage:
+      backend: filesystem
+      filesystem:
+        dir: /data/ruler
+    alertmanager_storage:
+      backend: filesystem
+      filesystem:
+        dir: /data/alertmanager
+
+alertmanager:
+  enabled: false
+ruler:
+  enabled: false
+
+ingester:
+  replicas: 1
+querier:
+  replicas: 1
+query_frontend:
+  replicas: 1
+distributor:
+  replicas: 1
+store_gateway:
+  replicas: 1
+compactor:
+  replicas: 1
+
+nginx:
+  enabled: true

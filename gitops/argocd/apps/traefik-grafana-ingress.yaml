@@ -1,0 +1,20 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: traefik-grafana-ingress
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "40"
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/TechApple/Deploy_LGTM.git
+    targetRevision: main
+    path: platform/networking/traefik
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: observability
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
