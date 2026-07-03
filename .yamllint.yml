@@ -5,5 +5,4 @@ rules:
   line-length: disable
   truthy: disable
   comments-indentation: disable
-  empty-lines:
-    max: 1
+  empty-lines: disable
