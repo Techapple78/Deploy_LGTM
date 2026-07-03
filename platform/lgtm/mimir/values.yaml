@@ -12,6 +12,8 @@ mimir:
         dir: /data/blocks
       bucket_store:
         sync_dir: /data/tsdb-sync
+    compactor:
+      data_dir: /data/compactor
     ingest_storage:
       enabled: false
     ruler_storage:
