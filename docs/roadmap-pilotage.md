@@ -130,6 +130,7 @@ Objectif:
 | Tempo | Traces OTLP visibles |
 | Alloy | DaemonSet pret sur les noeuds cibles |
 | CI | Workflows lint/render/security verts |
+| Supply chain | Workflow SBOM vert et artefact SPDX disponible |
 
 ## Gouvernance des changements
 

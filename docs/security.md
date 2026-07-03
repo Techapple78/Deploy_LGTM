@@ -46,3 +46,5 @@ La commande ne doit retourner aucune valeur sensible en clair. Les fichiers dans
 - Ajouter SBOM et scan de dependances.
 
 Le plan detaille avant l'iteration 4 est documente dans [security-hardening-plan.md](security-hardening-plan.md).
+
+Les controles CI `lint`, `render`, `security` et `sbom` sont detailles dans [ci-workflows.md](ci-workflows.md).

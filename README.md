@@ -95,6 +95,7 @@ La phase 3 de pre-deploiement controle est documentee dans [docs/phase-3.md](doc
 L'inventaire des pods et les schemas de fonctionnement sont dans [docs/pods-inventory.md](docs/pods-inventory.md).
 La roadmap et le pilotage projet sont dans [docs/roadmap-pilotage.md](docs/roadmap-pilotage.md).
 Le plan de durcissement avant iteration 4 est dans [docs/security-hardening-plan.md](docs/security-hardening-plan.md).
+Le fonctionnement des workflows CI est explique dans [docs/ci-workflows.md](docs/ci-workflows.md).
 
 ## Choix humains a confirmer
 
