@@ -21,13 +21,26 @@ mimir:
       filesystem:
         dir: /data/alertmanager
 
+global:
+  extraEnv:
+    - name: GOMEMLIMIT
+      value: 384MiB
+
 alertmanager:
   enabled: false
 ruler:
   enabled: false
+kafka:
+  enabled: false
+minio:
+  enabled: false
+gateway:
+  enabled: true
 
 ingester:
   replicas: 1
+  zoneAwareReplication:
+    enabled: false
 querier:
   replicas: 1
 query_frontend:
@@ -36,8 +49,10 @@ distributor:
   replicas: 1
 store_gateway:
   replicas: 1
+  zoneAwareReplication:
+    enabled: false
 compactor:
   replicas: 1
 
 nginx:
-  enabled: true
+  enabled: false

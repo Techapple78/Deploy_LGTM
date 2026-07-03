@@ -25,6 +25,11 @@ singleBinary:
 gateway:
   enabled: true
 
+chunksCache:
+  enabled: false
+resultsCache:
+  enabled: false
+
 read:
   replicas: 0
 write:
