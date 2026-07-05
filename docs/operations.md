@@ -31,3 +31,30 @@ Le socle doit exposer:
 - Cardinalite et ingestion Mimir.
 - Latence et erreurs Tempo.
 - Etat des collecteurs Alloy.
+
+## Diagnostic Loki apres redemarrage brutal
+
+Si `loki-0` apparait en `CrashLoopBackOff` ou en `1/2`, verifier d'abord quel conteneur redemarre:
+
+```powershell
+kubectl -n observability describe pod loki-0
+kubectl -n observability logs loki-0 -c loki --previous --tail=100
+kubectl -n observability logs loki-0 -c loki-sc-rules --previous --tail=100
+```
+
+Le conteneur principal `loki` porte le stockage et l'API logs. Le conteneur `loki-sc-rules` est un sidecar qui lit les `ConfigMap` et `Secret` Kubernetes labels `loki_rule` pour injecter des regles Loki. Avec un `NetworkPolicy` default deny, ce sidecar doit pouvoir joindre l'API Kubernetes interne. Le symptome typique est:
+
+```text
+HTTPSConnectionPool(host='10.0.0.1', port=443): Max retries exceeded
+Connection refused
+```
+
+Dans ce cas, verifier que la policy `allow-loki-to-kubernetes-api` est presente:
+
+```powershell
+kubectl -n observability get networkpolicy allow-loki-to-kubernetes-api -o yaml
+kubectl get svc kubernetes -o wide
+kubectl get endpoints kubernetes -o wide
+```
+
+La policy autorise Loki vers le service Kubernetes `10.0.0.1:443` et vers l'endpoint API du cluster `192.0.2.10:6443`. Si l'adresse API change, mettre a jour la policy GitOps avant resynchronisation ArgoCD.
