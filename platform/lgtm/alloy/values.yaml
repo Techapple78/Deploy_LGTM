@@ -113,6 +113,106 @@ alloy:
         forward_to = [prometheus.remote_write.mimir.receiver]
       }
 
+      prometheus.scrape "pfsense_snmp_interfaces" {
+        targets = [
+          {
+            "__address__"     = "snmp-exporter.observability.svc.cluster.local:9116",
+            "__param_target"  = "pfsense-snmp-target.observability.svc.cluster.local",
+            "__param_module"  = "if_mib",
+            "__param_auth"    = "public_v2",
+            "app"             = "pfsense",
+            "environment"     = "infra",
+            "namespace"       = "observability",
+            "service"         = "snmp",
+            "component"       = "firewall",
+            "instance"        = "pfsense",
+            "snmp_module"     = "if_mib",
+          },
+        ]
+        metrics_path = "/snmp"
+        forward_to   = [prometheus.remote_write.mimir.receiver]
+      }
+
+      prometheus.scrape "pfsense_snmp_system" {
+        targets = [
+          {
+            "__address__"     = "snmp-exporter.observability.svc.cluster.local:9116",
+            "__param_target"  = "pfsense-snmp-target.observability.svc.cluster.local",
+            "__param_module"  = "hrSystem",
+            "__param_auth"    = "public_v2",
+            "app"             = "pfsense",
+            "environment"     = "infra",
+            "namespace"       = "observability",
+            "service"         = "snmp",
+            "component"       = "firewall",
+            "instance"        = "pfsense",
+            "snmp_module"     = "hrSystem",
+          },
+        ]
+        metrics_path = "/snmp"
+        forward_to   = [prometheus.remote_write.mimir.receiver]
+      }
+
+      prometheus.scrape "pfsense_snmp_storage" {
+        targets = [
+          {
+            "__address__"     = "snmp-exporter.observability.svc.cluster.local:9116",
+            "__param_target"  = "pfsense-snmp-target.observability.svc.cluster.local",
+            "__param_module"  = "hrStorage",
+            "__param_auth"    = "public_v2",
+            "app"             = "pfsense",
+            "environment"     = "infra",
+            "namespace"       = "observability",
+            "service"         = "snmp",
+            "component"       = "firewall",
+            "instance"        = "pfsense",
+            "snmp_module"     = "hrStorage",
+          },
+        ]
+        metrics_path = "/snmp"
+        forward_to   = [prometheus.remote_write.mimir.receiver]
+      }
+
+      prometheus.scrape "pfsense_snmp_memory" {
+        targets = [
+          {
+            "__address__"     = "snmp-exporter.observability.svc.cluster.local:9116",
+            "__param_target"  = "pfsense-snmp-target.observability.svc.cluster.local",
+            "__param_module"  = "ucd_memory",
+            "__param_auth"    = "public_v2",
+            "app"             = "pfsense",
+            "environment"     = "infra",
+            "namespace"       = "observability",
+            "service"         = "snmp",
+            "component"       = "firewall",
+            "instance"        = "pfsense",
+            "snmp_module"     = "ucd_memory",
+          },
+        ]
+        metrics_path = "/snmp"
+        forward_to   = [prometheus.remote_write.mimir.receiver]
+      }
+
+      prometheus.scrape "pfsense_snmp_system_stats" {
+        targets = [
+          {
+            "__address__"     = "snmp-exporter.observability.svc.cluster.local:9116",
+            "__param_target"  = "pfsense-snmp-target.observability.svc.cluster.local",
+            "__param_module"  = "ucd_system_stats",
+            "__param_auth"    = "public_v2",
+            "app"             = "pfsense",
+            "environment"     = "infra",
+            "namespace"       = "observability",
+            "service"         = "snmp",
+            "component"       = "firewall",
+            "instance"        = "pfsense",
+            "snmp_module"     = "ucd_system_stats",
+          },
+        ]
+        metrics_path = "/snmp"
+        forward_to   = [prometheus.remote_write.mimir.receiver]
+      }
+
       otelcol.receiver.otlp "default" {
         grpc {}
         http {}
