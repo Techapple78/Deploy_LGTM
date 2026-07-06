@@ -72,14 +72,14 @@ Lecture conseillee apres deploiement:
 
 | Document | Role | Niveau |
 | --- | --- | --- |
-| [90-phase-2.md](90-phase-2.md) | MVP deployable controle: outillage, versions, Terraform minimal, sync waves. | Historique |
-| [91-phase-3.md](91-phase-3.md) | Pre-deploiement controle: Sealed Secrets, generation, validation, Git local. | Historique |
+| [reports/90-phase-2.md](reports/90-phase-2.md) | MVP deployable controle: outillage, versions, Terraform minimal, sync waves. | Historique |
+| [reports/91-phase-3.md](reports/91-phase-3.md) | Pre-deploiement controle: Sealed Secrets, generation, validation, Git local. | Historique |
 | [reports/](reports/) | Rapports de validation et de synchronisation. | Historique |
 
 Lecture conseillee pour comprendre les decisions passees:
 
-1. [90-phase-2.md](90-phase-2.md)
-2. [91-phase-3.md](91-phase-3.md)
+1. [reports/90-phase-2.md](reports/90-phase-2.md)
+2. [reports/91-phase-3.md](reports/91-phase-3.md)
 3. [reports/](reports/)
 
 ## Architecture documentaire cible
@@ -107,8 +107,8 @@ flowchart TD
   Ops --> Validation[12-validation-checklist.md]
 
   Start --> History[Historique]
-  History --> Phase2[90-phase-2.md]
-  History --> Phase3[91-phase-3.md]
+  History --> Phase2[reports/90-phase-2.md]
+  History --> Phase3[reports/91-phase-3.md]
   History --> Reports[reports/]
 ```
 

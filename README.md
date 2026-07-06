@@ -40,8 +40,11 @@ Le depot cible est `Techapple78/Deploy_LGTM`. Le cluster K3S est considere deja 
 |   |-- 10-operations.md
 |   |-- 11-troubleshooting.md
 |   |-- 12-validation-checklist.md
-|   |-- 90-phase-2.md
-|   `-- 91-phase-3.md
+|   `-- reports/
+|       |-- 90-phase-2.md
+|       |-- 91-phase-3.md
+|       |-- 91-phase-3-validation.md
+|       `-- 92-phase-4-first-gitops-sync.md
 |-- gitops/argocd/
 |   |-- app-of-apps/root-app.yaml
 |   `-- apps/*.yaml
@@ -100,8 +103,8 @@ Les commandes detaillees sont dans [docs/05-bootstrap.md](docs/05-bootstrap.md).
 
 Les secrets importes restent locaux dans `secrets/tmp/` jusqu'a generation de SealedSecrets.
 
-La phase 2 du MVP deployable controle est documentee dans [docs/90-phase-2.md](docs/90-phase-2.md).
-La phase 3 de pre-deploiement controle est documentee dans [docs/91-phase-3.md](docs/91-phase-3.md).
+La phase 2 du MVP deployable controle est documentee dans [docs/reports/90-phase-2.md](docs/reports/90-phase-2.md).
+La phase 3 de pre-deploiement controle est documentee dans [docs/reports/91-phase-3.md](docs/reports/91-phase-3.md).
 L'inventaire des pods et les schemas de fonctionnement sont dans [docs/03-pods-inventory.md](docs/03-pods-inventory.md).
 La roadmap et le pilotage projet sont dans [docs/02-roadmap-pilotage.md](docs/02-roadmap-pilotage.md).
 Le plan de durcissement avant iteration 4 est dans [docs/08-security-hardening-plan.md](docs/08-security-hardening-plan.md).
