@@ -41,3 +41,6 @@ tmp/
 dist/
 .tools/
 rendered/
+local/
+*.local.yaml
+*.local.yml

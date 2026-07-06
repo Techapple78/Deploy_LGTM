@@ -1,0 +1,24 @@
+targets:
+  - name: vcenter
+    ip: 192.0.2.10
+    type: vmware
+    metrics: api
+    logs: syslog
+
+  - name: firewall
+    ip: 192.0.2.20
+    type: firewall
+    metrics: snmp
+    logs: syslog
+
+  - name: nas
+    ip: 192.0.2.30
+    type: nas
+    metrics: snmp
+    logs: syslog
+
+  - name: ilo-node-01
+    ip: 192.0.2.40
+    type: ilo
+    metrics: redfish
+    logs: syslog
