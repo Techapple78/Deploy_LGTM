@@ -49,7 +49,7 @@ Depot GitHub:
 
 ### Iteration SEC-0 - Durcissement avant premiere synchronisation
 
-Etat: en cours.
+Etat: termine.
 
 Objectif:
 
@@ -68,7 +68,7 @@ Critere de sortie:
 
 ### Phase 4 - Publication et premiere synchronisation
 
-Etat: en cours.
+Etat: termine.
 
 Objectif:
 
@@ -82,12 +82,15 @@ Critere de sortie:
 - ArgoCD root app `Synced/Healthy`.
 - Grafana accessible via Traefik.
 - Datasources Loki/Mimir/Tempo visibles dans Grafana.
+- Correction post-incident Loki integree dans GitOps via `allow-loki-to-kubernetes-api`.
 
 Rapport de suivi:
 
 - `docs/reports/92-phase-4-first-gitops-sync.md`
 
 ### Phase 5 - Stabilisation production legere
+
+Etat: prochaine iteration.
 
 Objectif:
 
@@ -159,12 +162,12 @@ Regle simple:
 
 ## Prochaine iteration recommandee
 
-Phase 4:
+Phase 5:
 
-1. Terminer SEC-0.
-2. Verifier que les workflows GitHub Actions passent.
-3. Appliquer l'app-of-apps ArgoCD.
-4. Surveiller les pods LGTM et documenter l'inventaire post-sync.
-5. Ajuster les policies Kyverno/NetworkPolicy apres observation.
+1. Surveiller la stabilite LGTM sur 24h apres redemarrage brutal et correction Loki.
+2. Finaliser les dashboards et alertes essentielles Grafana.
+3. Tester la restauration operationnelle des elements critiques documentes.
+4. Examiner les violations Kyverno/PSA avant tout passage en `Enforce`.
+5. Completer les NetworkPolicies internes Mimir/Loki/Tempo apres observation runtime.
 
 

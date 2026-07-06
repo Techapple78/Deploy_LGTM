@@ -25,6 +25,8 @@ Appliquer l'app-of-apps ArgoCD `deploy-lgtm-root` depuis le depot `Techapple78/D
 - `4508b8c` - Desactivation des webhooks rollout Mimir pour le MVP.
 - `62a8fe6` - Separation du chemin local du compactor Mimir.
 - `69c1361` - Documentation de reprise et activation du gRPC push ingester Mimir.
+- `5554805` - Correction de l'egress Loki vers l'API Kubernetes apres incident post-redemarrage.
+- `2fa9918` - Organisation de la documentation et numerotation de l'ordre de lecture.
 
 ## Etat observe avant incident API
 
@@ -64,7 +66,25 @@ Le dernier diagnostic exploitable indiquait:
 - Kyverno est passe temporairement en `CrashLoopBackOff`; ses webhooks fail-close pouvaient bloquer les operations Kubernetes tant que `kyverno-svc` n'avait pas d'endpoints.
 - Mimir exige `ingester.push_grpc_method_enabled: true` lorsque `ingest_storage.enabled: false`; ce correctif est dans Git.
 
-## Reprise recommandee
+## Reprise realisee
+
+Apres retour API et stabilisation du cluster:
+
+- `deploy-lgtm-root` observe `Synced/Healthy`.
+- `observability-network-policies` observe `Synced/Healthy`.
+- `loki` observe `Synced/Healthy`.
+- `loki-0` observe `2/2 Running`.
+- Les conteneurs `loki` et `loki-sc-rules` sont revenus `ready=true` avec `restarts=0` apres correction.
+- Le log `loki-sc-rules` confirme `Initial sync complete, sidecar is ready.`
+
+Cause racine du dernier incident Loki:
+
+- `observability-default-deny` isolait correctement le namespace.
+- Le sidecar `loki-sc-rules` devait joindre l'API Kubernetes pour lire les `ConfigMap` et `Secret` labels `loki_rule`.
+- L'egress vers `10.0.0.1:443` et l'endpoint API `192.0.2.10:6443` n'etait pas encore autorisee.
+- La policy GitOps `allow-loki-to-kubernetes-api` a ete ajoutee et poussee.
+
+## Reprise historique recommandee
 
 Quand l'API server redevient joignable:
 
@@ -96,8 +116,10 @@ kubectl delete mutatingwebhookconfiguration kyverno-policy-mutating-webhook-cfg 
 kubectl -n kyverno delete pod -l app.kubernetes.io/part-of=kyverno --wait=false
 ```
 
-Critere de sortie restant:
+## Critere de sortie final
 
-- `mimir` et `loki` passent `Synced/Healthy`.
-- Les pods `mimir-*` restants correspondent au profil non zone-aware.
-- Les StatefulSets `loki-chunks-cache`, `loki-results-cache`, `mimir-kafka`, `mimir-ingester-zone-*` et `mimir-store-gateway-zone-*` ont disparu.
+- `deploy-lgtm-root` est `Synced/Healthy`.
+- `loki` est `Synced/Healthy` et `loki-0` est `2/2 Running`.
+- Les NetworkPolicies necessaires au MVP sont versionnees.
+- La documentation d'exploitation contient le diagnostic Loki post-redemarrage brutal.
+- La Phase 4 est consideree terminee; la suite logique est la Phase 5 de stabilisation production legere.
