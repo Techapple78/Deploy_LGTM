@@ -1,0 +1,37 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: sample-mysql-init
+  namespace: sample-app
+  labels:
+    app.kubernetes.io/name: sample-mysql
+    app.kubernetes.io/part-of: deploy-lgtm
+data:
+  01-init.sql: |
+    CREATE DATABASE IF NOT EXISTS sample_lgtm;
+    USE sample_lgtm;
+
+    CREATE TABLE IF NOT EXISTS tutorials (
+      id INT AUTO_INCREMENT PRIMARY KEY,
+      title VARCHAR(255) NOT NULL,
+      description TEXT NOT NULL,
+      published BOOLEAN NOT NULL DEFAULT FALSE,
+      created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+    );
+
+    CREATE TABLE IF NOT EXISTS frontend_events (
+      id INT AUTO_INCREMENT PRIMARY KEY,
+      event_type VARCHAR(64) NOT NULL,
+      route VARCHAR(128) NOT NULL,
+      severity VARCHAR(16) NOT NULL,
+      message VARCHAR(255) NOT NULL,
+      trace_id VARCHAR(64) NOT NULL,
+      duration_ms INT NULL,
+      created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+    );
+
+    INSERT INTO tutorials (title, description, published) VALUES
+      ('Deploy LGTM overview', 'Understand Grafana, Loki, Mimir, Tempo and Alloy.', TRUE),
+      ('Instrument Node.js', 'Add OpenTelemetry SDK and JSON logs to an Express API.', TRUE),
+      ('MySQL observability', 'Expose MySQL metrics and correlate slow queries.', FALSE),
+      ('Frontend telemetry', 'Collect browser errors and Web Vitals safely.', TRUE);

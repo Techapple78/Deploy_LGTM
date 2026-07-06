@@ -1,0 +1,372 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: sample-node-mysql-source
+  namespace: sample-app
+  labels:
+    app.kubernetes.io/name: sample-node-mysql
+    app.kubernetes.io/part-of: deploy-lgtm
+data:
+  package.json: |
+    {
+      "name": "sample-node-mysql",
+      "version": "0.1.0",
+      "private": true,
+      "type": "commonjs",
+      "scripts": {
+        "start": "node server.js"
+      },
+      "dependencies": {
+        "@opentelemetry/api": "1.9.0",
+        "@opentelemetry/exporter-trace-otlp-http": "0.57.2",
+        "@opentelemetry/instrumentation-express": "0.47.0",
+        "@opentelemetry/instrumentation-http": "0.57.2",
+        "@opentelemetry/instrumentation-mysql2": "0.47.0",
+        "@opentelemetry/resources": "1.30.1",
+        "@opentelemetry/sdk-node": "0.57.2",
+        "@opentelemetry/semantic-conventions": "1.30.0",
+        "express": "4.21.2",
+        "mysql2": "3.12.0",
+        "prom-client": "15.1.3"
+      }
+    }
+  otel.js: |
+    const { NodeSDK } = require('@opentelemetry/sdk-node');
+    const { OTLPTraceExporter } = require('@opentelemetry/exporter-trace-otlp-http');
+    const { HttpInstrumentation } = require('@opentelemetry/instrumentation-http');
+    const { ExpressInstrumentation } = require('@opentelemetry/instrumentation-express');
+    const { MySQL2Instrumentation } = require('@opentelemetry/instrumentation-mysql2');
+    const { Resource } = require('@opentelemetry/resources');
+    const { SemanticResourceAttributes } = require('@opentelemetry/semantic-conventions');
+
+    const sdk = new NodeSDK({
+      resource: new Resource({
+        [SemanticResourceAttributes.SERVICE_NAME]: process.env.OTEL_SERVICE_NAME || 'sample-node-mysql',
+        [SemanticResourceAttributes.SERVICE_VERSION]: process.env.SERVICE_VERSION || '0.1.0',
+        'deployment.environment': process.env.ENVIRONMENT || 'dev'
+      }),
+      traceExporter: new OTLPTraceExporter({
+        url: process.env.OTEL_EXPORTER_OTLP_TRACES_ENDPOINT || 'http://alloy.observability.svc.cluster.local:4318/v1/traces'
+      }),
+      instrumentations: [
+        new HttpInstrumentation(),
+        new ExpressInstrumentation(),
+        new MySQL2Instrumentation()
+      ]
+    });
+
+    sdk.start();
+
+    process.on('SIGTERM', () => {
+      sdk.shutdown().finally(() => process.exit(0));
+    });
+  server.js: |
+    require('./otel');
+
+    const express = require('express');
+    const mysql = require('mysql2/promise');
+    const prom = require('prom-client');
+    const crypto = require('crypto');
+    const fs = require('fs');
+    const path = require('path');
+    const { trace, context } = require('@opentelemetry/api');
+
+    const app = express();
+    const port = Number(process.env.PORT || 3000);
+    const environment = process.env.ENVIRONMENT || 'dev';
+    const serviceName = process.env.OTEL_SERVICE_NAME || 'sample-node-mysql';
+    const version = process.env.SERVICE_VERSION || '0.1.0';
+
+    const pool = mysql.createPool({
+      host: process.env.MYSQL_HOST || 'sample-mysql',
+      port: Number(process.env.MYSQL_PORT || 3306),
+      user: process.env.MYSQL_USER || 'sample',
+      password: process.env.MYSQL_PASSWORD || 'sample',
+      database: process.env.MYSQL_DATABASE || 'sample_lgtm',
+      waitForConnections: true,
+      connectionLimit: 5
+    });
+
+    prom.collectDefaultMetrics({
+      labels: { app: serviceName, environment, service: 'api', version }
+    });
+
+    const httpRequests = new prom.Counter({
+      name: 'http_server_requests_total',
+      help: 'Total HTTP requests handled by the sample app',
+      labelNames: ['app', 'environment', 'route', 'method', 'status']
+    });
+
+    const httpDuration = new prom.Histogram({
+      name: 'http_server_duration_seconds',
+      help: 'HTTP request duration in seconds',
+      labelNames: ['app', 'environment', 'route', 'method', 'status'],
+      buckets: [0.01, 0.025, 0.05, 0.1, 0.25, 0.5, 1, 2, 5]
+    });
+
+    const frontendErrors = new prom.Counter({
+      name: 'frontend_errors_total',
+      help: 'Synthetic frontend errors received by the sample app',
+      labelNames: ['app', 'environment', 'route', 'severity']
+    });
+
+    app.use(express.json());
+    app.use(express.static(path.join(__dirname, 'public')));
+
+    function traceId() {
+      const activeSpan = trace.getSpan(context.active());
+      const spanContext = activeSpan && activeSpan.spanContext();
+      return spanContext && spanContext.traceId ? spanContext.traceId : crypto.randomBytes(16).toString('hex');
+    }
+
+    function log(level, message, fields = {}) {
+      const entry = {
+        timestamp: new Date().toISOString(),
+        level,
+        app: serviceName,
+        environment,
+        service: fields.service || 'api',
+        component: fields.component || 'backend',
+        version,
+        trace_id: fields.trace_id || traceId(),
+        message,
+        ...fields
+      };
+      console.log(JSON.stringify(entry));
+    }
+
+    app.use((req, res, next) => {
+      const started = process.hrtime.bigint();
+      res.on('finish', () => {
+        const durationSeconds = Number(process.hrtime.bigint() - started) / 1e9;
+        const route = req.route && req.route.path ? `${req.method} ${req.route.path}` : `${req.method} ${req.path}`;
+        const labels = {
+          app: serviceName,
+          environment,
+          route,
+          method: req.method,
+          status: String(res.statusCode)
+        };
+        httpRequests.inc(labels);
+        httpDuration.observe(labels, durationSeconds);
+        log(res.statusCode >= 500 ? 'error' : 'info', 'request completed', {
+          route,
+          status: res.statusCode,
+          duration_ms: Math.round(durationSeconds * 1000),
+          trace_id: traceId()
+        });
+      });
+      next();
+    });
+
+    app.get('/healthz', async (_req, res) => {
+      await pool.query('SELECT 1');
+      res.json({ status: 'ok', service: serviceName, environment, version });
+    });
+
+    app.get('/api/tutorials', async (req, res) => {
+      if (req.query.force_error === 'true') {
+        throw new Error('Synthetic API error requested by test scenario');
+      }
+      const [rows] = await pool.query('SELECT id, title, description, published, created_at FROM tutorials ORDER BY id');
+      res.json(rows);
+    });
+
+    app.post('/api/tutorials', async (req, res) => {
+      const title = req.body.title || 'Synthetic LGTM tutorial';
+      const description = req.body.description || 'Generated by sample app';
+      const published = Boolean(req.body.published);
+      const [result] = await pool.query(
+        'INSERT INTO tutorials (title, description, published) VALUES (?, ?, ?)',
+        [title, description, published]
+      );
+      res.status(201).json({ id: result.insertId, title, description, published });
+    });
+
+    app.post('/api/client-events', async (req, res) => {
+      const eventType = req.body.event_type || 'frontend_event';
+      const route = req.body.route || '/';
+      const severity = req.body.severity || 'info';
+      const message = req.body.message || 'frontend event';
+      const durationMs = Number(req.body.duration_ms || 0);
+      const id = traceId();
+      if (severity === 'error') {
+        frontendErrors.inc({ app: serviceName, environment, route, severity });
+      }
+      await pool.query(
+        'INSERT INTO frontend_events (event_type, route, severity, message, trace_id, duration_ms) VALUES (?, ?, ?, ?, ?, ?)',
+        [eventType, route, severity, message, id, durationMs]
+      );
+      log(severity === 'error' ? 'error' : 'info', message, {
+        service: 'frontend',
+        component: 'browser',
+        route,
+        status: 0,
+        duration_ms: durationMs,
+        trace_id: id
+      });
+      res.status(202).json({ accepted: true, trace_id: id });
+    });
+
+    app.get('/metrics', async (_req, res) => {
+      res.set('Content-Type', prom.register.contentType);
+      res.end(await prom.register.metrics());
+    });
+
+    app.get('/', (_req, res) => {
+      res.sendFile(path.join(__dirname, 'public', 'index.html'));
+    });
+
+    app.use((err, req, res, _next) => {
+      log('error', err.message, {
+        route: `${req.method} ${req.path}`,
+        status: 500,
+        duration_ms: 0,
+        trace_id: traceId()
+      });
+      res.status(500).json({ error: 'synthetic_error', message: err.message });
+    });
+
+    fs.mkdirSync(path.join(__dirname, 'public'), { recursive: true });
+    app.listen(port, () => {
+      log('info', 'sample app started', { route: 'startup', status: 200, duration_ms: 0 });
+    });
+  index.html: |
+    <!doctype html>
+    <html lang="en">
+    <head>
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <title>Deploy LGTM Sample App</title>
+      <link rel="stylesheet" href="/style.css">
+    </head>
+    <body>
+      <main>
+        <section class="hero">
+          <p class="eyebrow">Deploy_LGTM telemetry</p>
+          <h1>Sample App</h1>
+          <p>HTML, CSS, JavaScript, Node.js and MySQL feeding Loki, Mimir and Tempo.</p>
+        </section>
+        <section class="panel">
+          <div>
+            <h2>Tutorials</h2>
+            <ul id="tutorials"></ul>
+          </div>
+          <div class="actions">
+            <button id="refresh">Refresh</button>
+            <button id="create">Create tutorial</button>
+            <button id="error">Trigger API error</button>
+            <button id="frontend">Trigger frontend event</button>
+          </div>
+          <pre id="output"></pre>
+        </section>
+      </main>
+      <script src="/app.js"></script>
+    </body>
+    </html>
+  style.css: |
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f6f7f9;
+      color: #20242a;
+    }
+    main {
+      max-width: 980px;
+      margin: 0 auto;
+      padding: 32px 20px;
+    }
+    .hero {
+      padding: 28px 0;
+    }
+    .eyebrow {
+      text-transform: uppercase;
+      font-size: 12px;
+      letter-spacing: 0.08em;
+      color: #57606a;
+    }
+    h1 {
+      margin: 0;
+      font-size: 40px;
+    }
+    .panel {
+      background: #fff;
+      border: 1px solid #d8dee4;
+      border-radius: 8px;
+      padding: 20px;
+    }
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin: 20px 0;
+    }
+    button {
+      border: 1px solid #8c959f;
+      border-radius: 6px;
+      background: #f6f8fa;
+      padding: 8px 12px;
+      cursor: pointer;
+    }
+    pre {
+      min-height: 80px;
+      overflow: auto;
+      background: #0d1117;
+      color: #c9d1d9;
+      padding: 12px;
+      border-radius: 6px;
+    }
+  app.js: |
+    const output = document.querySelector('#output');
+    const tutorials = document.querySelector('#tutorials');
+
+    function show(value) {
+      output.textContent = JSON.stringify(value, null, 2);
+    }
+
+    async function refresh() {
+      const response = await fetch('/api/tutorials');
+      const data = await response.json();
+      tutorials.innerHTML = data.map((item) => `<li>${item.title}</li>`).join('');
+      show(data);
+    }
+
+    async function createTutorial() {
+      const response = await fetch('/api/tutorials', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({
+          title: `Synthetic tutorial ${new Date().toISOString()}`,
+          description: 'Generated from browser test button',
+          published: true
+        })
+      });
+      show(await response.json());
+      await refresh();
+    }
+
+    async function triggerError() {
+      const response = await fetch('/api/tutorials?force_error=true');
+      show(await response.json());
+    }
+
+    async function frontendEvent() {
+      const response = await fetch('/api/client-events', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({
+          event_type: 'javascript_error',
+          route: window.location.pathname,
+          severity: 'error',
+          message: 'Synthetic frontend exception',
+          duration_ms: 0
+        })
+      });
+      show(await response.json());
+    }
+
+    document.querySelector('#refresh').addEventListener('click', refresh);
+    document.querySelector('#create').addEventListener('click', createTutorial);
+    document.querySelector('#error').addEventListener('click', triggerError);
+    document.querySelector('#frontend').addEventListener('click', frontendEvent);
+    refresh().catch((error) => show({ error: error.message }));

@@ -1,0 +1,220 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sample-mysql
+  namespace: sample-app
+  labels:
+    app.kubernetes.io/name: sample-mysql
+    app.kubernetes.io/part-of: deploy-lgtm
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: sample-mysql
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: sample-mysql
+        app.kubernetes.io/part-of: deploy-lgtm
+    spec:
+      containers:
+        - name: mysql
+          image: mysql:8.4
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: mysql
+              containerPort: 3306
+          env:
+            - name: MYSQL_DATABASE
+              value: sample_lgtm
+            - name: MYSQL_USER
+              valueFrom:
+                secretKeyRef:
+                  name: sample-app-mysql
+                  key: MYSQL_USER
+            - name: MYSQL_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: sample-app-mysql
+                  key: MYSQL_PASSWORD
+            - name: MYSQL_ROOT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: sample-app-mysql
+                  key: MYSQL_ROOT_PASSWORD
+          volumeMounts:
+            - name: mysql-data
+              mountPath: /var/lib/mysql
+            - name: mysql-init
+              mountPath: /docker-entrypoint-initdb.d
+          readinessProbe:
+            exec:
+              command:
+                - sh
+                - -c
+                - mysqladmin ping -h 127.0.0.1 -u"$MYSQL_USER" -p"$MYSQL_PASSWORD"
+            initialDelaySeconds: 20
+            periodSeconds: 10
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+            limits:
+              memory: 1Gi
+      volumes:
+        - name: mysql-data
+          emptyDir: {}
+        - name: mysql-init
+          configMap:
+            name: sample-mysql-init
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sample-mysql-exporter
+  namespace: sample-app
+  labels:
+    app.kubernetes.io/name: sample-mysql-exporter
+    app.kubernetes.io/part-of: deploy-lgtm
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: sample-mysql-exporter
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: sample-mysql-exporter
+        app.kubernetes.io/part-of: deploy-lgtm
+    spec:
+      containers:
+        - name: mysqld-exporter
+          image: prom/mysqld-exporter:v0.15.1
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: metrics
+              containerPort: 9104
+          env:
+            - name: MYSQL_USER
+              valueFrom:
+                secretKeyRef:
+                  name: sample-app-mysql
+                  key: MYSQL_USER
+            - name: MYSQL_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: sample-app-mysql
+                  key: MYSQL_PASSWORD
+            - name: DATA_SOURCE_NAME
+              value: "$(MYSQL_USER):$(MYSQL_PASSWORD)@(sample-mysql.sample-app.svc.cluster.local:3306)/"
+          resources:
+            requests:
+              cpu: 25m
+              memory: 64Mi
+            limits:
+              memory: 128Mi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sample-node-mysql
+  namespace: sample-app
+  labels:
+    app.kubernetes.io/name: sample-node-mysql
+    app.kubernetes.io/part-of: deploy-lgtm
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: sample-node-mysql
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: sample-node-mysql
+        app.kubernetes.io/part-of: deploy-lgtm
+    spec:
+      initContainers:
+        - name: install-dependencies
+          image: node:20-alpine
+          imagePullPolicy: IfNotPresent
+          command:
+            - sh
+            - -c
+            - cp -r /src/* /app/ && cd /app && npm install --omit=dev
+          volumeMounts:
+            - name: app-source
+              mountPath: /src
+            - name: app-workdir
+              mountPath: /app
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              memory: 512Mi
+      containers:
+        - name: app
+          image: node:20-alpine
+          imagePullPolicy: IfNotPresent
+          workingDir: /app
+          command:
+            - sh
+            - -c
+            - mkdir -p public && cp /src/index.html /src/style.css /src/app.js public/ && node server.js
+          ports:
+            - name: http
+              containerPort: 3000
+          env:
+            - name: PORT
+              value: "3000"
+            - name: ENVIRONMENT
+              value: dev
+            - name: SERVICE_VERSION
+              value: 0.1.0
+            - name: OTEL_SERVICE_NAME
+              value: sample-node-mysql
+            - name: OTEL_EXPORTER_OTLP_TRACES_ENDPOINT
+              value: http://alloy.observability.svc.cluster.local:4318/v1/traces
+            - name: MYSQL_HOST
+              value: sample-mysql.sample-app.svc.cluster.local
+            - name: MYSQL_DATABASE
+              value: sample_lgtm
+            - name: MYSQL_USER
+              valueFrom:
+                secretKeyRef:
+                  name: sample-app-mysql
+                  key: MYSQL_USER
+            - name: MYSQL_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: sample-app-mysql
+                  key: MYSQL_PASSWORD
+          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: 3000
+            initialDelaySeconds: 20
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: 3000
+            initialDelaySeconds: 60
+            periodSeconds: 20
+          volumeMounts:
+            - name: app-source
+              mountPath: /src
+            - name: app-workdir
+              mountPath: /app
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+            limits:
+              memory: 768Mi
+      volumes:
+        - name: app-source
+          configMap:
+            name: sample-node-mysql-source
+        - name: app-workdir
+          emptyDir: {}

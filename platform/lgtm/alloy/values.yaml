@@ -2,6 +2,15 @@ controller:
   type: daemonset
 
 alloy:
+  extraPorts:
+    - name: otlp-grpc
+      port: 4317
+      targetPort: 4317
+      protocol: TCP
+    - name: otlp-http
+      port: 4318
+      targetPort: 4318
+      protocol: TCP
   configMap:
     create: true
     content: |
@@ -29,6 +38,35 @@ alloy:
         endpoint {
           url = "http://mimir-gateway.observability.svc.cluster.local/api/v1/push"
         }
+      }
+
+      prometheus.scrape "sample_app" {
+        targets = [
+          {
+            "__address__" = "sample-node-mysql.sample-app.svc.cluster.local:3000",
+            "app" = "sample-node-mysql",
+            "environment" = "dev",
+            "namespace" = "sample-app",
+            "service" = "api",
+            "component" = "backend",
+          },
+        ]
+        metrics_path = "/metrics"
+        forward_to   = [prometheus.remote_write.mimir.receiver]
+      }
+
+      prometheus.scrape "sample_mysql" {
+        targets = [
+          {
+            "__address__" = "sample-mysql-exporter.sample-app.svc.cluster.local:9104",
+            "app" = "sample-node-mysql",
+            "environment" = "dev",
+            "namespace" = "sample-app",
+            "service" = "mysql",
+            "component" = "database",
+          },
+        ]
+        forward_to = [prometheus.remote_write.mimir.receiver]
       }
 
       otelcol.receiver.otlp "default" {
