@@ -43,6 +43,8 @@ alloy:
       }
 
       loki.relabel "syslog" {
+        forward_to = [loki.write.default.receiver]
+
         rule {
           action = "labelmap"
           regex  = "__syslog_(.+)"
@@ -74,8 +76,7 @@ alloy:
           }
         }
 
-        relabel_rules = loki.relabel.syslog.rules
-        forward_to    = [loki.write.default.receiver]
+        forward_to = [loki.relabel.syslog.receiver]
       }
 
       prometheus.remote_write "mimir" {
