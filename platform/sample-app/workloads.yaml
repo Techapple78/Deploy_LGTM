@@ -130,6 +130,8 @@ spec:
       app.kubernetes.io/name: sample-node-mysql
   template:
     metadata:
+      annotations:
+        deploy-lgtm.io/app-config-revision: "2026-07-06-01"
       labels:
         app.kubernetes.io/name: sample-node-mysql
         app.kubernetes.io/part-of: deploy-lgtm
