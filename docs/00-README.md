@@ -44,6 +44,7 @@ Lecture conseillee avant une modification GitOps:
 
 | Document | Role | Niveau |
 | --- | --- | --- |
+| [../SECURITY.md](../SECURITY.md) | Politique securite racine: contribution, secrets, baseline workload, signalement. | Politique |
 | [07-security.md](07-security.md) | Regles permanentes: secrets, rotation, controles avant commit, principes de durcissement. | HLD/LLD |
 | [08-security-hardening-plan.md](08-security-hardening-plan.md) | Plan SEC-0 avant premiere synchronisation GitOps. | HLD/LLD |
 | [09-hardening-audit.md](09-hardening-audit.md) | Audit CIS/K3s/Kubernetes/Kyverno et plan de durcissement progressif. | HLD/LLD |
@@ -86,7 +87,7 @@ Lecture conseillee pour comprendre les decisions passees:
 
 | Document | Role | Niveau |
 | --- | --- | --- |
-| [integrations/01-html-css-js-mysql-lgtm.md](integrations/01-html-css-js-mysql-lgtm.md) | Guide HLD/LLD pour raccorder une application HTML/CSS/JS/MySQL a Loki, Mimir, Tempo, Grafana et Alloy. | HLD/LLD |
+| [integrations/01-html-css-js-mysql-lgtm.md](integrations/01-html-css-js-mysql-lgtm.md) | Guide HLD/LLD pour raccorder une application HTML/CSS/JS/MySQL maitrisee a Loki, Mimir, Tempo, Grafana et Alloy. | HLD/LLD |
 | [integrations/02-infra-monitoring-lgtm.md](integrations/02-infra-monitoring-lgtm.md) | Guide HLD/LLD generique pour raccorder des equipements infra a Loki, Mimir et Grafana sans versionner les cibles reelles. | HLD/LLD |
 
 Lecture conseillee pour integrer une application test:
@@ -94,8 +95,6 @@ Lecture conseillee pour integrer une application test:
 1. [04-network-flows.md](04-network-flows.md)
 2. [integrations/01-html-css-js-mysql-lgtm.md](integrations/01-html-css-js-mysql-lgtm.md)
 3. [integrations/02-infra-monitoring-lgtm.md](integrations/02-infra-monitoring-lgtm.md)
-4. [reports/93-application-telemetry-integration-plan.md](reports/93-application-telemetry-integration-plan.md)
-5. [reports/94-phase-5-application-telemetry-deployment-plan.md](reports/94-phase-5-application-telemetry-deployment-plan.md)
 
 ## Architecture documentaire cible
 
@@ -129,8 +128,6 @@ flowchart TD
   Start --> Integrations[Integrations applicatives]
   Integrations --> AppLGTM[integrations/01-html-css-js-mysql-lgtm.md]
   Integrations --> InfraLGTM[integrations/02-infra-monitoring-lgtm.md]
-  Integrations --> AppReport[reports/93-application-telemetry-integration-plan.md]
-  Integrations --> AppDeploy[reports/94-phase-5-application-telemetry-deployment-plan.md]
 ```
 
 ## Parcours par profil
@@ -167,9 +164,7 @@ flowchart TD
 
 1. [04-network-flows.md](04-network-flows.md)
 2. [integrations/01-html-css-js-mysql-lgtm.md](integrations/01-html-css-js-mysql-lgtm.md)
-3. [reports/93-application-telemetry-integration-plan.md](reports/93-application-telemetry-integration-plan.md)
-4. [reports/94-phase-5-application-telemetry-deployment-plan.md](reports/94-phase-5-application-telemetry-deployment-plan.md)
-5. [12-validation-checklist.md](12-validation-checklist.md)
+3. [12-validation-checklist.md](12-validation-checklist.md)
 
 ## Regles de maintien documentaire
 

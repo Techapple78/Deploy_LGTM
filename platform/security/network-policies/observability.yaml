@@ -81,53 +81,6 @@ spec:
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
-  name: allow-sample-app-to-alloy-otlp
-  namespace: observability
-spec:
-  podSelector:
-    matchLabels:
-      app.kubernetes.io/name: alloy
-  policyTypes:
-    - Ingress
-  ingress:
-    - from:
-        - namespaceSelector:
-            matchLabels:
-              kubernetes.io/metadata.name: sample-app
-          podSelector:
-            matchLabels:
-              app.kubernetes.io/name: sample-node-mysql
-      ports:
-        - protocol: TCP
-          port: 4317
-        - protocol: TCP
-          port: 4318
----
-apiVersion: networking.k8s.io/v1
-kind: NetworkPolicy
-metadata:
-  name: allow-alloy-to-sample-app-metrics
-  namespace: observability
-spec:
-  podSelector:
-    matchLabels:
-      app.kubernetes.io/name: alloy
-  policyTypes:
-    - Egress
-  egress:
-    - to:
-        - namespaceSelector:
-            matchLabels:
-              kubernetes.io/metadata.name: sample-app
-      ports:
-        - protocol: TCP
-          port: 3000
-        - protocol: TCP
-          port: 9104
----
-apiVersion: networking.k8s.io/v1
-kind: NetworkPolicy
-metadata:
   name: allow-alloy-to-snmp-exporter
   namespace: observability
 spec:

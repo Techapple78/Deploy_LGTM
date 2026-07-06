@@ -84,35 +84,6 @@ alloy:
         }
       }
 
-      prometheus.scrape "sample_app" {
-        targets = [
-          {
-            "__address__" = "sample-node-mysql.sample-app.svc.cluster.local:3000",
-            "app" = "sample-node-mysql",
-            "environment" = "dev",
-            "namespace" = "sample-app",
-            "service" = "api",
-            "component" = "backend",
-          },
-        ]
-        metrics_path = "/metrics"
-        forward_to   = [prometheus.remote_write.mimir.receiver]
-      }
-
-      prometheus.scrape "sample_mysql" {
-        targets = [
-          {
-            "__address__" = "sample-mysql-exporter.sample-app.svc.cluster.local:9104",
-            "app" = "sample-node-mysql",
-            "environment" = "dev",
-            "namespace" = "sample-app",
-            "service" = "mysql",
-            "component" = "database",
-          },
-        ]
-        forward_to = [prometheus.remote_write.mimir.receiver]
-      }
-
       prometheus.scrape "pfsense_snmp_interfaces" {
         targets = [
           {

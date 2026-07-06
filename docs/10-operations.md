@@ -41,11 +41,7 @@ kubectl -n observability get secret grafana-admin -o jsonpath="{.data.admin-user
 kubectl -n observability get secret grafana-admin -o jsonpath="{.data.admin-password}" | %{ [Text.Encoding]::UTF8.GetString([Convert]::FromBase64String($_)) }
 ```
 
-Le dashboard applicatif provisionne est attendu dans le dossier Grafana `Deploy_LGTM`, sous le nom:
-
-```text
-Deploy_LGTM Sample App Overview
-```
+Les dashboards provisionnes dans le dossier Grafana `Deploy_LGTM` couvrent la stack LGTM et les integrations infra maintenues. L'ancien dashboard applicatif temoin a ete retire avec l'application externe non maintenue.
 
 ## Acces Loki et Mimir
 
@@ -74,7 +70,7 @@ Exemples de lecture:
 ```powershell
 Invoke-RestMethod "http://127.0.0.1:3100/loki/api/v1/labels"
 
-Invoke-RestMethod "http://127.0.0.1:3100/loki/api/v1/query_range?query=%7Bnamespace%3D%22sample-app%22%7D&limit=10"
+Invoke-RestMethod "http://127.0.0.1:3100/loki/api/v1/query_range?query=%7Bnamespace%3D%22observability%22%7D&limit=10"
 ```
 
 Pour tester Mimir depuis le poste d'administration:

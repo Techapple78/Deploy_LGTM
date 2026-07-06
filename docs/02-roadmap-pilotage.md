@@ -115,7 +115,7 @@ Critere de sortie:
 
 Rapport de planification:
 
-- `docs/reports/94-phase-5-application-telemetry-deployment-plan.md`
+- une future iteration applicative maitrisee, sans dependance a une application exemple non maintenue
 
 ### Phase 6 - Durcissement production
 
