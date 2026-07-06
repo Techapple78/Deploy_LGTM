@@ -40,11 +40,14 @@ Le depot cible est `Techapple78/Deploy_LGTM`. Le cluster K3S est considere deja 
 |   |-- 10-operations.md
 |   |-- 11-troubleshooting.md
 |   |-- 12-validation-checklist.md
+|   |-- integrations/
+|   |   `-- 01-html-css-js-mysql-lgtm.md
 |   `-- reports/
 |       |-- 90-phase-2.md
 |       |-- 91-phase-3.md
 |       |-- 91-phase-3-validation.md
-|       `-- 92-phase-4-first-gitops-sync.md
+|       |-- 92-phase-4-first-gitops-sync.md
+|       `-- 93-application-telemetry-integration-plan.md
 |-- gitops/argocd/
 |   |-- app-of-apps/root-app.yaml
 |   `-- apps/*.yaml
@@ -109,6 +112,7 @@ L'inventaire des pods et les schemas de fonctionnement sont dans [docs/03-pods-i
 La roadmap et le pilotage projet sont dans [docs/02-roadmap-pilotage.md](docs/02-roadmap-pilotage.md).
 Le plan de durcissement avant iteration 4 est dans [docs/08-security-hardening-plan.md](docs/08-security-hardening-plan.md).
 Le fonctionnement des workflows CI est explique dans [docs/06-ci-workflows.md](docs/06-ci-workflows.md).
+Le guide d'integration applicative LGTM est dans [docs/integrations/01-html-css-js-mysql-lgtm.md](docs/integrations/01-html-css-js-mysql-lgtm.md).
 
 ## Choix humains a confirmer
 

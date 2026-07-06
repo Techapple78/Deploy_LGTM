@@ -82,6 +82,19 @@ Lecture conseillee pour comprendre les decisions passees:
 2. [reports/91-phase-3.md](reports/91-phase-3.md)
 3. [reports/](reports/)
 
+### 6. Integrations applicatives
+
+| Document | Role | Niveau |
+| --- | --- | --- |
+| [integrations/01-html-css-js-mysql-lgtm.md](integrations/01-html-css-js-mysql-lgtm.md) | Guide HLD/LLD pour raccorder une application HTML/CSS/JS/MySQL a Loki, Mimir, Tempo, Grafana et Alloy. | HLD/LLD |
+
+Lecture conseillee pour integrer une application test:
+
+1. [04-network-flows.md](04-network-flows.md)
+2. [integrations/01-html-css-js-mysql-lgtm.md](integrations/01-html-css-js-mysql-lgtm.md)
+3. [reports/93-application-telemetry-integration-plan.md](reports/93-application-telemetry-integration-plan.md)
+4. [reports/94-phase-5-application-telemetry-deployment-plan.md](reports/94-phase-5-application-telemetry-deployment-plan.md)
+
 ## Architecture documentaire cible
 
 ```mermaid
@@ -110,6 +123,11 @@ flowchart TD
   History --> Phase2[reports/90-phase-2.md]
   History --> Phase3[reports/91-phase-3.md]
   History --> Reports[reports/]
+
+  Start --> Integrations[Integrations applicatives]
+  Integrations --> AppLGTM[integrations/01-html-css-js-mysql-lgtm.md]
+  Integrations --> AppReport[reports/93-application-telemetry-integration-plan.md]
+  Integrations --> AppDeploy[reports/94-phase-5-application-telemetry-deployment-plan.md]
 ```
 
 ## Parcours par profil
@@ -142,6 +160,14 @@ flowchart TD
 3. [12-validation-checklist.md](12-validation-checklist.md)
 4. [10-operations.md](10-operations.md)
 
+### Integrateur applicatif
+
+1. [04-network-flows.md](04-network-flows.md)
+2. [integrations/01-html-css-js-mysql-lgtm.md](integrations/01-html-css-js-mysql-lgtm.md)
+3. [reports/93-application-telemetry-integration-plan.md](reports/93-application-telemetry-integration-plan.md)
+4. [reports/94-phase-5-application-telemetry-deployment-plan.md](reports/94-phase-5-application-telemetry-deployment-plan.md)
+5. [12-validation-checklist.md](12-validation-checklist.md)
+
 ## Regles de maintien documentaire
 
 - Tout changement GitOps significatif doit mettre a jour au moins un document de conception, d'exploitation ou de validation.
@@ -149,3 +175,4 @@ flowchart TD
 - Toute nouvelle policy Kyverno ou PSA doit etre refletee dans [08-security-hardening-plan.md](08-security-hardening-plan.md) ou [09-hardening-audit.md](09-hardening-audit.md).
 - Tout incident resolu doit alimenter [10-operations.md](10-operations.md) ou [11-troubleshooting.md](11-troubleshooting.md).
 - Chaque phase importante doit avoir un rapport dans [reports/](reports/) si elle change l'etat du cluster.
+- Toute integration applicative doit avoir un guide dans [integrations/](integrations/) et un rapport de planification ou de validation dans [reports/](reports/).

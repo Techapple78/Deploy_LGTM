@@ -90,10 +90,12 @@ Rapport de suivi:
 
 ### Phase 5 - Stabilisation production legere
 
-Etat: prochaine iteration.
+Etat: planifiee.
 
 Objectif:
 
+- Deployer une application temoin HTML/CSS/JavaScript/MySQL pour consommer la stack LGTM.
+- Generer une charge controlee de logs, metriques et traces via Alloy.
 - Ajuster ressources CPU/memoire.
 - Confirmer StorageClass.
 - Ajouter sauvegarde cle Sealed Secrets.
@@ -102,9 +104,18 @@ Objectif:
 
 Critere de sortie:
 
+- Application temoin accessible via Traefik.
+- Logs applicatifs visibles dans Loki.
+- Metriques API et MySQL visibles dans Mimir.
+- Traces applicatives visibles dans Tempo.
+- Dashboard Grafana applicatif cree.
 - Runbooks valides.
 - Restauration testee.
 - Alertes essentielles actives.
+
+Rapport de planification:
+
+- `docs/reports/94-phase-5-application-telemetry-deployment-plan.md`
 
 ### Phase 6 - Durcissement production
 
@@ -164,10 +175,11 @@ Regle simple:
 
 Phase 5:
 
-1. Surveiller la stabilite LGTM sur 24h apres redemarrage brutal et correction Loki.
-2. Finaliser les dashboards et alertes essentielles Grafana.
-3. Tester la restauration operationnelle des elements critiques documentes.
-4. Examiner les violations Kyverno/PSA avant tout passage en `Enforce`.
-5. Completer les NetworkPolicies internes Mimir/Loki/Tempo apres observation runtime.
+1. Deployer une application temoin HTML/CSS/JavaScript/MySQL dans un namespace dedie.
+2. Instrumenter l'application et MySQL pour envoyer logs, metriques et traces vers Alloy.
+3. Creer le dashboard Grafana applicatif et les alertes minimales.
+4. Utiliser cette charge pour observer Loki, Mimir, Tempo, Alloy et Grafana sur 24h.
+5. Ajuster ressources, retention et NetworkPolicies a partir des donnees observees.
+6. Examiner les violations Kyverno/PSA avant tout passage en `Enforce`.
 
 
