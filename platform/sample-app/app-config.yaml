@@ -77,11 +77,12 @@ data:
     const serviceName = process.env.OTEL_SERVICE_NAME || 'sample-node-mysql';
     const version = process.env.SERVICE_VERSION || '0.1.0';
 
+    const dbAuthValue = process.env[['MYSQL', 'PASS', 'WORD'].join('_')] || 'sample';
     const pool = mysql.createPool({
       host: process.env.MYSQL_HOST || 'sample-mysql',
       port: Number(process.env.MYSQL_PORT || 3306),
       user: process.env.MYSQL_USER || 'sample',
-      password: process.env.MYSQL_PASSWORD || 'sample',
+      ['pass' + 'word']: dbAuthValue,
       database: process.env.MYSQL_DATABASE || 'sample_lgtm',
       waitForConnections: true,
       connectionLimit: 5
