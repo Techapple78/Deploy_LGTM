@@ -47,6 +47,83 @@ Le dashboard applicatif provisionne est attendu dans le dossier Grafana `Deploy_
 Deploy_LGTM Sample App Overview
 ```
 
+## Acces Loki et Mimir
+
+Loki et Mimir ne sont pas exposes publiquement. L'acces cible passe par Grafana et par les datasources provisionnees:
+
+| Backend | Usage | Service interne |
+| --- | --- | --- |
+| Loki | Logs LogQL | `loki-gateway.observability.svc.cluster.local:80` |
+| Mimir | Metriques Prometheus/PromQL | `mimir-gateway.observability.svc.cluster.local:80` |
+
+Dans l'etat actuel du lab, Loki et Mimir ne portent pas de couple utilisateur/mot de passe applicatif dedie. La protection repose sur:
+
+- l'absence d'exposition externe directe;
+- les `NetworkPolicy` du namespace `observability`;
+- l'acces operateur via `kubectl`;
+- l'acces utilisateur via Grafana.
+
+Pour tester Loki depuis le poste d'administration sans exposer le service:
+
+```powershell
+kubectl -n observability port-forward svc/loki-gateway 3100:80
+```
+
+Exemples de lecture:
+
+```powershell
+Invoke-RestMethod "http://127.0.0.1:3100/loki/api/v1/labels"
+
+Invoke-RestMethod "http://127.0.0.1:3100/loki/api/v1/query_range?query=%7Bnamespace%3D%22sample-app%22%7D&limit=10"
+```
+
+Pour tester Mimir depuis le poste d'administration:
+
+```powershell
+kubectl -n observability port-forward svc/mimir-gateway 9009:80
+```
+
+Exemples de lecture:
+
+```powershell
+Invoke-RestMethod "http://127.0.0.1:9009/ready"
+
+Invoke-RestMethod "http://127.0.0.1:9009/prometheus/api/v1/query?query=up"
+```
+
+Pour pousser des logs vers Loki en test, utiliser l'API push locale apres port-forward:
+
+```powershell
+$now = ([DateTimeOffset]::UtcNow.ToUnixTimeMilliseconds() * 1000000).ToString()
+$body = @{
+  streams = @(
+    @{
+      stream = @{
+        job = "manual-test"
+        source = "operator"
+      }
+      values = @(
+        @($now, "test log from operator workstation")
+      )
+    }
+  )
+} | ConvertTo-Json -Depth 8
+
+Invoke-RestMethod `
+  -Method Post `
+  -Uri "http://127.0.0.1:3100/loki/api/v1/push" `
+  -ContentType "application/json" `
+  -Body $body
+```
+
+Pour Mimir, l'ecriture directe utilise le protocole Prometheus `remote_write`. Elle est normalement effectuee par Alloy ou un exporter compatible Prometheus. Pour un test externe, preferer un collector/exporter configure en `remote_write` vers:
+
+```text
+http://127.0.0.1:9009/api/v1/push
+```
+
+Ne pas exposer Loki ou Mimir directement par Ingress tant qu'une strategie d'authentification n'est pas definie. Pour un acces multi-utilisateur, privilegier Grafana ou une passerelle authentifiee.
+
 ## Sauvegardes
 
 - Sauvegarder la cle privee Sealed Secrets avec chiffrement fort.

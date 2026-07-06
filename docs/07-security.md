@@ -48,3 +48,22 @@ La commande ne doit retourner aucune valeur sensible en clair. Les fichiers dans
 Le plan detaille avant l'iteration 4 est documente dans [08-security-hardening-plan.md](08-security-hardening-plan.md).
 
 Les controles CI `lint`, `render`, `security` et `sbom` sont detailles dans [06-ci-workflows.md](06-ci-workflows.md).
+
+## Credentials Loki et Mimir
+
+Dans le lab actuel, Loki et Mimir ne doivent pas etre consideres comme des services publics authentifies par login/mot de passe. Leur protection vient du perimetre Kubernetes:
+
+- services internes `ClusterIP`;
+- acces indirect par Grafana;
+- acces operateur par `kubectl port-forward`;
+- filtrage par `NetworkPolicy`.
+
+Ne pas publier de credentials Loki/Mimir dans Git. Si une authentification dediee est ajoutee plus tard, les secrets devront etre stockes hors Git puis versionnes uniquement sous forme de `SealedSecret`.
+
+Avant toute exposition externe de Loki ou Mimir, definir au minimum:
+
+1. une strategie TLS;
+2. une authentification explicite;
+3. une autorisation par role ou tenant;
+4. une politique de retention;
+5. un controle des flux entrants par `NetworkPolicy` et par Ingress/Gateway.
