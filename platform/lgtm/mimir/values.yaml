@@ -18,6 +18,11 @@ mimir:
       enabled: false
     ingester:
       push_grpc_method_enabled: true
+      ring:
+        replication_factor: 1
+    store_gateway:
+      sharding_ring:
+        replication_factor: 1
     ruler_storage:
       backend: filesystem
       filesystem:
