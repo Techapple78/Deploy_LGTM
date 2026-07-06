@@ -129,6 +129,62 @@ spec:
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
+  name: allow-lgtm-internal-ingress
+  namespace: observability
+spec:
+  podSelector:
+    matchExpressions:
+      - key: app.kubernetes.io/name
+        operator: In
+        values:
+          - loki
+          - mimir
+          - tempo
+  policyTypes:
+    - Ingress
+  ingress:
+    - from:
+        - podSelector:
+            matchExpressions:
+              - key: app.kubernetes.io/name
+                operator: In
+                values:
+                  - loki
+                  - mimir
+                  - tempo
+                  - alloy
+                  - grafana
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-lgtm-internal-egress
+  namespace: observability
+spec:
+  podSelector:
+    matchExpressions:
+      - key: app.kubernetes.io/name
+        operator: In
+        values:
+          - loki
+          - mimir
+          - tempo
+  policyTypes:
+    - Egress
+  egress:
+    - to:
+        - podSelector:
+            matchExpressions:
+              - key: app.kubernetes.io/name
+                operator: In
+                values:
+                  - loki
+                  - mimir
+                  - tempo
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
   name: allow-grafana-and-alloy-to-loki-gateway
   namespace: observability
 spec:
@@ -147,6 +203,8 @@ spec:
             matchLabels:
               app.kubernetes.io/name: alloy
       ports:
+        - protocol: TCP
+          port: 80
         - protocol: TCP
           port: 8080
 ---
@@ -171,6 +229,8 @@ spec:
             matchLabels:
               app.kubernetes.io/name: alloy
       ports:
+        - protocol: TCP
+          port: 80
         - protocol: TCP
           port: 8080
 ---
@@ -224,6 +284,8 @@ spec:
           port: 3100
         - protocol: TCP
           port: 80
+        - protocol: TCP
+          port: 8080
     - to:
         - podSelector:
             matchLabels:
@@ -264,6 +326,8 @@ spec:
           port: 3100
         - protocol: TCP
           port: 80
+        - protocol: TCP
+          port: 8080
     - to:
         - podSelector:
             matchLabels:
