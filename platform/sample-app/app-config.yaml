@@ -166,7 +166,11 @@ data:
 
     app.get('/api/tutorials', async (req, res) => {
       if (req.query.force_error === 'true') {
-        throw new Error('Synthetic API error requested by test scenario');
+        res.status(500).json({
+          error: 'synthetic_error',
+          message: 'Synthetic API error requested by test scenario'
+        });
+        return;
       }
       const [rows] = await pool.query('SELECT id, title, description, published, created_at FROM tutorials ORDER BY id');
       res.json(rows);
