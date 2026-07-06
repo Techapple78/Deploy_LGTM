@@ -1375,6 +1375,322 @@ dashboards:
           "version": 1,
           "weekStart": ""
         }
+    unifi-overview:
+      json: |
+        {
+          "annotations": {
+            "list": [
+              {
+                "builtIn": 1,
+                "datasource": {
+                  "type": "grafana",
+                  "uid": "-- Grafana --"
+                },
+                "enable": true,
+                "hide": true,
+                "iconColor": "rgba(0, 211, 255, 1)",
+                "name": "Annotations & Alerts",
+                "type": "dashboard"
+              }
+            ]
+          },
+          "editable": true,
+          "fiscalYearStartMonth": 0,
+          "graphTooltip": 0,
+          "id": null,
+          "links": [],
+          "panels": [
+            {
+              "datasource": "Mimir",
+              "fieldConfig": {
+                "defaults": {
+                  "color": {
+                    "mode": "thresholds"
+                  },
+                  "thresholds": {
+                    "mode": "absolute",
+                    "steps": [
+                      {
+                        "color": "red",
+                        "value": null
+                      },
+                      {
+                        "color": "green",
+                        "value": 1
+                      }
+                    ]
+                  },
+                  "unit": "short"
+                },
+                "overrides": []
+              },
+              "gridPos": {
+                "h": 4,
+                "w": 8,
+                "x": 0,
+                "y": 0
+              },
+              "id": 1,
+              "options": {
+                "colorMode": "background",
+                "graphMode": "area",
+                "justifyMode": "auto",
+                "orientation": "auto",
+                "reduceOptions": {
+                  "calcs": [
+                    "min"
+                  ],
+                  "fields": "",
+                  "values": false
+                },
+                "textMode": "auto"
+              },
+              "targets": [
+                {
+                  "expr": "min(up{app=\"unifi\"})",
+                  "refId": "A"
+                }
+              ],
+              "title": "UniFi SNMP Up",
+              "type": "stat"
+            },
+            {
+              "datasource": "Mimir",
+              "fieldConfig": {
+                "defaults": {
+                  "unit": "s"
+                },
+                "overrides": []
+              },
+              "gridPos": {
+                "h": 4,
+                "w": 8,
+                "x": 8,
+                "y": 0
+              },
+              "id": 2,
+              "options": {
+                "colorMode": "value",
+                "graphMode": "area",
+                "justifyMode": "auto",
+                "orientation": "auto",
+                "reduceOptions": {
+                  "calcs": [
+                    "lastNotNull"
+                  ],
+                  "fields": "",
+                  "values": false
+                },
+                "textMode": "auto"
+              },
+              "targets": [
+                {
+                  "expr": "hrSystemUptime{app=\"unifi\"} / 100",
+                  "refId": "A"
+                }
+              ],
+              "title": "UniFi OS Uptime",
+              "type": "stat"
+            },
+            {
+              "datasource": "Mimir",
+              "fieldConfig": {
+                "defaults": {
+                  "unit": "short"
+                },
+                "overrides": []
+              },
+              "gridPos": {
+                "h": 4,
+                "w": 8,
+                "x": 16,
+                "y": 0
+              },
+              "id": 3,
+              "options": {
+                "colorMode": "value",
+                "graphMode": "area",
+                "justifyMode": "auto",
+                "orientation": "auto",
+                "reduceOptions": {
+                  "calcs": [
+                    "lastNotNull"
+                  ],
+                  "fields": "",
+                  "values": false
+                },
+                "textMode": "auto"
+              },
+              "targets": [
+                {
+                  "expr": "sum(ubntWlStatIndex{app=\"unifi\"})",
+                  "refId": "A"
+                }
+              ],
+              "title": "UniFi Wireless Index Count",
+              "type": "stat"
+            },
+            {
+              "datasource": "Mimir",
+              "fieldConfig": {
+                "defaults": {
+                  "unit": "bps"
+                },
+                "overrides": []
+              },
+              "gridPos": {
+                "h": 8,
+                "w": 12,
+                "x": 0,
+                "y": 4
+              },
+              "id": 4,
+              "options": {
+                "legend": {
+                  "displayMode": "table",
+                  "placement": "bottom"
+                },
+                "tooltip": {
+                  "mode": "multi",
+                  "sort": "none"
+                }
+              },
+              "targets": [
+                {
+                  "expr": "8 * rate(ifHCInOctets{app=\"unifi\", ifName!=\"lo\"}[5m])",
+                  "legendFormat": "in {{ifName}}",
+                  "refId": "A"
+                },
+                {
+                  "expr": "8 * rate(ifHCOutOctets{app=\"unifi\", ifName!=\"lo\"}[5m])",
+                  "legendFormat": "out {{ifName}}",
+                  "refId": "B"
+                }
+              ],
+              "title": "UniFi Interface Traffic",
+              "type": "timeseries"
+            },
+            {
+              "datasource": "Mimir",
+              "fieldConfig": {
+                "defaults": {
+                  "unit": "short"
+                },
+                "overrides": []
+              },
+              "gridPos": {
+                "h": 8,
+                "w": 12,
+                "x": 12,
+                "y": 4
+              },
+              "id": 5,
+              "options": {
+                "legend": {
+                  "displayMode": "table",
+                  "placement": "bottom"
+                },
+                "tooltip": {
+                  "mode": "multi",
+                  "sort": "none"
+                }
+              },
+              "targets": [
+                {
+                  "expr": "ubntWlStatSignal{app=\"unifi\"}",
+                  "legendFormat": "signal {{ubntWlStatIndex}}",
+                  "refId": "A"
+                },
+                {
+                  "expr": "ubntWlStatNoiseFloor{app=\"unifi\"}",
+                  "legendFormat": "noise {{ubntWlStatIndex}}",
+                  "refId": "B"
+                }
+              ],
+              "title": "UniFi Wireless Signal and Noise",
+              "type": "timeseries"
+            },
+            {
+              "datasource": "Loki",
+              "gridPos": {
+                "h": 9,
+                "w": 24,
+                "x": 0,
+                "y": 12
+              },
+              "id": 6,
+              "options": {
+                "dedupStrategy": "none",
+                "enableLogDetails": true,
+                "prettifyLogMessage": true,
+                "showCommonLabels": false,
+                "showLabels": true,
+                "showTime": true,
+                "sortOrder": "Descending",
+                "wrapLogMessage": true
+              },
+              "targets": [
+                {
+                  "expr": "{job=\"infra-syslog\"} |~ \"(?i)(unifi|ubnt|udm|dream machine|network application|hostapd|dnsmasq|kernel)\"",
+                  "refId": "A"
+                }
+              ],
+              "title": "Recent UniFi OS Logs",
+              "type": "logs"
+            },
+            {
+              "datasource": "Loki",
+              "gridPos": {
+                "h": 8,
+                "w": 24,
+                "x": 0,
+                "y": 21
+              },
+              "id": 7,
+              "options": {
+                "dedupStrategy": "none",
+                "enableLogDetails": true,
+                "prettifyLogMessage": true,
+                "showCommonLabels": false,
+                "showLabels": true,
+                "showTime": true,
+                "sortOrder": "Descending",
+                "wrapLogMessage": true
+              },
+              "targets": [
+                {
+                  "expr": "{job=\"infra-syslog\"} |~ \"(?i)(unifi|ubnt|udm|dream machine|network application|hostapd|dnsmasq|kernel)\" |~ \"(?i)(error|critical|failed|failure|warn|warning|disconnect|offline|blocked)\"",
+                  "refId": "A"
+                }
+              ],
+              "title": "UniFi OS Warnings and Errors",
+              "type": "logs"
+            }
+          ],
+          "refresh": "30s",
+          "schemaVersion": 39,
+          "tags": [
+            "deploy-lgtm",
+            "unifi",
+            "ubiquiti",
+            "network",
+            "snmp",
+            "loki"
+          ],
+          "templating": {
+            "list": []
+          },
+          "time": {
+            "from": "now-1h",
+            "to": "now"
+          },
+          "timepicker": {},
+          "timezone": "browser",
+          "title": "Deploy_LGTM UniFi OS Overview",
+          "uid": "deploy-lgtm-unifi-overview",
+          "version": 1,
+          "weekStart": ""
+        }
 
 resources:
   requests:

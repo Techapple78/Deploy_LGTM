@@ -293,6 +293,66 @@ alloy:
         forward_to   = [prometheus.remote_write.mimir.receiver]
       }
 
+      prometheus.scrape "unifi_snmp_device" {
+        targets = [
+          {
+            "__address__"     = "snmp-exporter.observability.svc.cluster.local:9116",
+            "__param_target"  = "unifi-snmp-target.observability.svc.cluster.local",
+            "__param_module"  = "ubiquiti_unifi",
+            "__param_auth"    = "public_v2",
+            "app"             = "unifi",
+            "environment"     = "infra",
+            "namespace"       = "observability",
+            "service"         = "snmp",
+            "component"       = "network",
+            "instance"        = "unifi-os",
+            "snmp_module"     = "ubiquiti_unifi",
+          },
+        ]
+        metrics_path = "/snmp"
+        forward_to   = [prometheus.remote_write.mimir.receiver]
+      }
+
+      prometheus.scrape "unifi_snmp_interfaces" {
+        targets = [
+          {
+            "__address__"     = "snmp-exporter.observability.svc.cluster.local:9116",
+            "__param_target"  = "unifi-snmp-target.observability.svc.cluster.local",
+            "__param_module"  = "if_mib",
+            "__param_auth"    = "public_v2",
+            "app"             = "unifi",
+            "environment"     = "infra",
+            "namespace"       = "observability",
+            "service"         = "snmp",
+            "component"       = "network",
+            "instance"        = "unifi-os",
+            "snmp_module"     = "if_mib",
+          },
+        ]
+        metrics_path = "/snmp"
+        forward_to   = [prometheus.remote_write.mimir.receiver]
+      }
+
+      prometheus.scrape "unifi_snmp_system" {
+        targets = [
+          {
+            "__address__"     = "snmp-exporter.observability.svc.cluster.local:9116",
+            "__param_target"  = "unifi-snmp-target.observability.svc.cluster.local",
+            "__param_module"  = "hrSystem",
+            "__param_auth"    = "public_v2",
+            "app"             = "unifi",
+            "environment"     = "infra",
+            "namespace"       = "observability",
+            "service"         = "snmp",
+            "component"       = "network",
+            "instance"        = "unifi-os",
+            "snmp_module"     = "hrSystem",
+          },
+        ]
+        metrics_path = "/snmp"
+        forward_to   = [prometheus.remote_write.mimir.receiver]
+      }
+
       otelcol.receiver.otlp "default" {
         grpc {}
         http {}

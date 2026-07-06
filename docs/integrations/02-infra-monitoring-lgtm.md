@@ -127,6 +127,7 @@ Objets locaux hors Git:
 | `observability/snmp-exporter-config` | Secret Kubernetes contenant `snmp.yml` et la community SNMP. |
 | `observability/pfsense-snmp-target` | Service headless + Endpoints pointant vers pfSense. |
 | `observability/synology-snmp-target` | Service headless + Endpoints pointant vers le NAS DSM. |
+| `observability/unifi-snmp-target` | Service headless + Endpoints pointant vers UniFi OS. |
 
 Modules SNMP actives:
 
@@ -138,6 +139,7 @@ Modules SNMP actives:
 | `ucd_memory` | Memoire. |
 | `ucd_system_stats` | Compteurs CPU systeme. |
 | `synology` | Etat DSM, disques, temperatures, ventilateurs, volumes Synology. |
+| `ubiquiti_unifi` | Metriques radio et wireless UniFi/Ubiquiti. |
 
 Metriques validees:
 
@@ -188,6 +190,55 @@ hrSystemUptime{app="synology"}
 hrStorageSize{app="synology"}
 ```
 
+## Integration UniFi OS SNMP et syslog
+
+La collecte UniFi OS est preparee avec:
+
+```text
+UniFi OS UDP/161
+  <- snmp-exporter
+  <- Alloy /snmp scrape
+  -> Mimir
+  -> Grafana
+
+UniFi OS syslog
+  -> lgtm-syslog.example.local:514
+  -> Alloy syslog
+  -> Loki
+  -> Grafana
+```
+
+Scrapes Alloy:
+
+| Scrape | Module | Usage |
+| --- | --- | --- |
+| `unifi_snmp_device` | `ubiquiti_unifi` | Metriques UniFi/Ubiquiti radio et wireless. |
+| `unifi_snmp_interfaces` | `if_mib` | Trafic interfaces. |
+| `unifi_snmp_system` | `hrSystem` | Uptime systeme. |
+
+Dashboard:
+
+```text
+Deploy_LGTM UniFi OS Overview
+```
+
+Requetes principales:
+
+```promql
+up{app="unifi"}
+ifHCInOctets{app="unifi"}
+hrSystemUptime{app="unifi"}
+ubntWlStatSignal{app="unifi"}
+ubntWlStatNoiseFloor{app="unifi"}
+```
+
+Etat de validation:
+
+- le pipeline LGTM est pret cote Kubernetes;
+- la cible locale `unifi-snmp-target` est creee hors Git;
+- le test direct `snmp-exporter -> UniFi OS UDP/161` retourne `connection refused` tant que SNMP n'est pas actif ou autorise cote UniFi OS;
+- les logs syslog seront visibles via Loki des que UniFi OS envoie vers `lgtm-syslog.example.local:514`.
+
 ## Credentials
 
 Aucun credential ne doit etre stocke dans Git.
@@ -215,6 +266,7 @@ Deploy_LGTM
   Deploy_LGTM vCenter Logs Overview
   Deploy_LGTM pfSense Overview
   Deploy_LGTM Synology DSM Overview
+  Deploy_LGTM UniFi OS Overview
   Infra
     VMware Metrics Overview
     Firewall Overview
@@ -269,6 +321,7 @@ Panels prioritaires:
 | vCenter Logs Overview | volume logs, erreurs, warnings, evenements recents |
 | pfSense Overview | statut SNMP, uptime, memoire, CPU, trafic interfaces, filesystems, logs |
 | Synology DSM Overview | statut SNMP, uptime, volumes, trafic, temperatures, sante disques, logs |
+| UniFi OS Overview | statut SNMP, uptime, trafic interfaces, wireless, logs |
 | VMware Metrics Overview | hosts, VM, datastores, CPU ready, memoire, evenements critiques |
 | Firewall Overview | interfaces, gateways, drops, VPN, CPU/RAM, logs blocks |
 | NAS Overview | volumes, storage pool, SMART, temperature, reseau |
