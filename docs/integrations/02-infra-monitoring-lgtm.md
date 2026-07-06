@@ -13,6 +13,7 @@ La version Git ne contient aucune adresse reelle, aucun nom sensible et aucun cr
 | `docs/integrations/02-infra-monitoring-lgtm.md` | Oui | Guide HLD/LLD generique. |
 | `examples/infra-targets.example.yaml` | Oui | Exemple anonymise de cibles. |
 | `local/infra-targets.local.yaml` | Non | Inventaire reel local, ignore par Git. |
+| `local/pfsense-snmp.yml` | Non | Config locale `snmp_exporter` contenant la community SNMP. |
 
 ## Inventaire local attendu
 
@@ -96,6 +97,56 @@ flowchart LR
 | `nas` | `snmp_exporter` ou exporter dedie | Syslog NAS |
 | `ilo` | Redfish exporter | Syslog iLO |
 
+## Integration pfSense SNMP
+
+La collecte pfSense utilise:
+
+```text
+pfSense UDP/161
+  <- snmp-exporter
+  <- Alloy /snmp scrape
+  -> Mimir
+  -> Grafana
+```
+
+Objets versionnes:
+
+| Objet | Role |
+| --- | --- |
+| `infra-monitoring` | Application Argo CD dediee aux exporters infra. |
+| `snmp-exporter` | Deployment et Service internes dans `observability`. |
+| `prometheus.scrape.pfsense_snmp_*` | Scrapes Alloy vers `snmp-exporter`. |
+| `allow-alloy-to-snmp-exporter` | Autorise l'entree Alloy vers `snmp-exporter`. |
+| `allow-alloy-egress-to-snmp-exporter` | Autorise la sortie Alloy vers `snmp-exporter`. |
+| `allow-snmp-exporter-to-private-snmp-targets` | Autorise la sortie UDP/161 vers les cibles SNMP privees. |
+
+Objets locaux hors Git:
+
+| Objet | Role |
+| --- | --- |
+| `observability/snmp-exporter-config` | Secret Kubernetes contenant `snmp.yml` et la community SNMP. |
+| `observability/pfsense-snmp-target` | Service headless + Endpoints pointant vers pfSense. |
+
+Modules SNMP actives:
+
+| Module | Usage |
+| --- | --- |
+| `if_mib` | Interfaces, trafic, etats, erreurs. |
+| `hrSystem` | Uptime systeme. |
+| `hrStorage` | Volumes et filesystems. |
+| `ucd_memory` | Memoire. |
+| `ucd_system_stats` | Compteurs CPU systeme. |
+
+Metriques validees:
+
+```promql
+up{app="pfsense"}
+ifHCInOctets{app="pfsense"}
+hrSystemUptime{app="pfsense"}
+memTotalReal{app="pfsense"}
+ssCpuRawUser{app="pfsense"}
+```
+
 ## Credentials
 
 Aucun credential ne doit etre stocke dans Git.
@@ -121,6 +172,7 @@ Arborescence Grafana proposee:
 ```text
 Deploy_LGTM
   Deploy_LGTM vCenter Logs Overview
+  Deploy_LGTM pfSense Overview
   Infra
     VMware Metrics Overview
     Firewall Overview
@@ -173,6 +225,7 @@ Panels prioritaires:
 | Dashboard | Panels |
 | --- | --- |
 | vCenter Logs Overview | volume logs, erreurs, warnings, evenements recents |
+| pfSense Overview | statut SNMP, uptime, memoire, CPU, trafic interfaces, filesystems, logs |
 | VMware Metrics Overview | hosts, VM, datastores, CPU ready, memoire, evenements critiques |
 | Firewall Overview | interfaces, gateways, drops, VPN, CPU/RAM, logs blocks |
 | NAS Overview | volumes, storage pool, SMART, temperature, reseau |

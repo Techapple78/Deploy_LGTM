@@ -583,6 +583,354 @@ dashboards:
           "version": 1,
           "weekStart": ""
         }
+    pfsense-overview:
+      json: |
+        {
+          "annotations": {
+            "list": [
+              {
+                "builtIn": 1,
+                "datasource": {
+                  "type": "grafana",
+                  "uid": "-- Grafana --"
+                },
+                "enable": true,
+                "hide": true,
+                "iconColor": "rgba(0, 211, 255, 1)",
+                "name": "Annotations & Alerts",
+                "type": "dashboard"
+              }
+            ]
+          },
+          "editable": true,
+          "fiscalYearStartMonth": 0,
+          "graphTooltip": 0,
+          "id": null,
+          "links": [],
+          "panels": [
+            {
+              "datasource": "Mimir",
+              "fieldConfig": {
+                "defaults": {
+                  "color": {
+                    "mode": "thresholds"
+                  },
+                  "thresholds": {
+                    "mode": "absolute",
+                    "steps": [
+                      {
+                        "color": "red",
+                        "value": null
+                      },
+                      {
+                        "color": "green",
+                        "value": 1
+                      }
+                    ]
+                  },
+                  "unit": "short"
+                },
+                "overrides": []
+              },
+              "gridPos": {
+                "h": 4,
+                "w": 6,
+                "x": 0,
+                "y": 0
+              },
+              "id": 1,
+              "options": {
+                "colorMode": "background",
+                "graphMode": "area",
+                "justifyMode": "auto",
+                "orientation": "auto",
+                "reduceOptions": {
+                  "calcs": [
+                    "min"
+                  ],
+                  "fields": "",
+                  "values": false
+                },
+                "textMode": "auto"
+              },
+              "targets": [
+                {
+                  "expr": "min(up{app=\"pfsense\"})",
+                  "refId": "A"
+                }
+              ],
+              "title": "pfSense SNMP Up",
+              "type": "stat"
+            },
+            {
+              "datasource": "Mimir",
+              "fieldConfig": {
+                "defaults": {
+                  "unit": "s"
+                },
+                "overrides": []
+              },
+              "gridPos": {
+                "h": 4,
+                "w": 6,
+                "x": 6,
+                "y": 0
+              },
+              "id": 2,
+              "options": {
+                "colorMode": "value",
+                "graphMode": "area",
+                "justifyMode": "auto",
+                "orientation": "auto",
+                "reduceOptions": {
+                  "calcs": [
+                    "lastNotNull"
+                  ],
+                  "fields": "",
+                  "values": false
+                },
+                "textMode": "auto"
+              },
+              "targets": [
+                {
+                  "expr": "hrSystemUptime{app=\"pfsense\"} / 100",
+                  "refId": "A"
+                }
+              ],
+              "title": "pfSense Uptime",
+              "type": "stat"
+            },
+            {
+              "datasource": "Mimir",
+              "fieldConfig": {
+                "defaults": {
+                  "unit": "percent"
+                },
+                "overrides": []
+              },
+              "gridPos": {
+                "h": 4,
+                "w": 6,
+                "x": 12,
+                "y": 0
+              },
+              "id": 3,
+              "options": {
+                "colorMode": "value",
+                "graphMode": "area",
+                "justifyMode": "auto",
+                "orientation": "auto",
+                "reduceOptions": {
+                  "calcs": [
+                    "lastNotNull"
+                  ],
+                  "fields": "",
+                  "values": false
+                },
+                "textMode": "auto"
+              },
+              "targets": [
+                {
+                  "expr": "100 * (memTotalReal{app=\"pfsense\"} - memAvailReal{app=\"pfsense\"}) / memTotalReal{app=\"pfsense\"}",
+                  "refId": "A"
+                }
+              ],
+              "title": "Memory Used",
+              "type": "stat"
+            },
+            {
+              "datasource": "Mimir",
+              "fieldConfig": {
+                "defaults": {
+                  "unit": "short"
+                },
+                "overrides": []
+              },
+              "gridPos": {
+                "h": 4,
+                "w": 6,
+                "x": 18,
+                "y": 0
+              },
+              "id": 4,
+              "options": {
+                "colorMode": "value",
+                "graphMode": "area",
+                "justifyMode": "auto",
+                "orientation": "auto",
+                "reduceOptions": {
+                  "calcs": [
+                    "lastNotNull"
+                  ],
+                  "fields": "",
+                  "values": false
+                },
+                "textMode": "auto"
+              },
+              "targets": [
+                {
+                  "expr": "rate(ssCpuRawUser{app=\"pfsense\"}[5m]) + rate(ssCpuRawSystem{app=\"pfsense\"}[5m]) + rate(ssCpuRawNice{app=\"pfsense\"}[5m])",
+                  "refId": "A"
+                }
+              ],
+              "title": "CPU Raw Activity",
+              "type": "stat"
+            },
+            {
+              "datasource": "Mimir",
+              "fieldConfig": {
+                "defaults": {
+                  "unit": "bps"
+                },
+                "overrides": []
+              },
+              "gridPos": {
+                "h": 8,
+                "w": 12,
+                "x": 0,
+                "y": 4
+              },
+              "id": 5,
+              "options": {
+                "legend": {
+                  "displayMode": "table",
+                  "placement": "bottom"
+                },
+                "tooltip": {
+                  "mode": "multi",
+                  "sort": "none"
+                }
+              },
+              "targets": [
+                {
+                  "expr": "8 * rate(ifHCInOctets{app=\"pfsense\", ifName!=\"lo0\"}[5m])",
+                  "legendFormat": "in {{ifAlias}} {{ifName}}",
+                  "refId": "A"
+                },
+                {
+                  "expr": "8 * rate(ifHCOutOctets{app=\"pfsense\", ifName!=\"lo0\"}[5m])",
+                  "legendFormat": "out {{ifAlias}} {{ifName}}",
+                  "refId": "B"
+                }
+              ],
+              "title": "Interface Traffic",
+              "type": "timeseries"
+            },
+            {
+              "datasource": "Mimir",
+              "fieldConfig": {
+                "defaults": {
+                  "unit": "percent"
+                },
+                "overrides": []
+              },
+              "gridPos": {
+                "h": 8,
+                "w": 12,
+                "x": 12,
+                "y": 4
+              },
+              "id": 6,
+              "options": {
+                "legend": {
+                  "displayMode": "table",
+                  "placement": "bottom"
+                },
+                "tooltip": {
+                  "mode": "multi",
+                  "sort": "none"
+                }
+              },
+              "targets": [
+                {
+                  "expr": "100 * hrStorageUsed{app=\"pfsense\", hrStorageDescr=~\"/.*\"} / hrStorageSize{app=\"pfsense\", hrStorageDescr=~\"/.*\"}",
+                  "legendFormat": "{{hrStorageDescr}}",
+                  "refId": "A"
+                }
+              ],
+              "title": "Filesystem Usage",
+              "type": "timeseries"
+            },
+            {
+              "datasource": "Loki",
+              "gridPos": {
+                "h": 9,
+                "w": 24,
+                "x": 0,
+                "y": 12
+              },
+              "id": 7,
+              "options": {
+                "dedupStrategy": "none",
+                "enableLogDetails": true,
+                "prettifyLogMessage": true,
+                "showCommonLabels": false,
+                "showLabels": true,
+                "showTime": true,
+                "sortOrder": "Descending",
+                "wrapLogMessage": true
+              },
+              "targets": [
+                {
+                  "expr": "{job=\"infra-syslog\"} |~ \"(?i)(pfsense|filterlog|unbound|dhcpd|openvpn|ipsec|gateway)\"",
+                  "refId": "A"
+                }
+              ],
+              "title": "Recent pfSense Logs",
+              "type": "logs"
+            },
+            {
+              "datasource": "Loki",
+              "gridPos": {
+                "h": 8,
+                "w": 24,
+                "x": 0,
+                "y": 21
+              },
+              "id": 8,
+              "options": {
+                "dedupStrategy": "none",
+                "enableLogDetails": true,
+                "prettifyLogMessage": true,
+                "showCommonLabels": false,
+                "showLabels": true,
+                "showTime": true,
+                "sortOrder": "Descending",
+                "wrapLogMessage": true
+              },
+              "targets": [
+                {
+                  "expr": "{job=\"infra-syslog\"} |~ \"(?i)(pfsense|filterlog|unbound|dhcpd|openvpn|ipsec|gateway)\" |~ \"(?i)(block|deny|error|critical|failed|down|loss)\"",
+                  "refId": "A"
+                }
+              ],
+              "title": "pfSense Alerts and Blocks",
+              "type": "logs"
+            }
+          ],
+          "refresh": "30s",
+          "schemaVersion": 39,
+          "tags": [
+            "deploy-lgtm",
+            "pfsense",
+            "infra",
+            "snmp",
+            "loki"
+          ],
+          "templating": {
+            "list": []
+          },
+          "time": {
+            "from": "now-1h",
+            "to": "now"
+          },
+          "timepicker": {},
+          "timezone": "browser",
+          "title": "Deploy_LGTM pfSense Overview",
+          "uid": "deploy-lgtm-pfsense-overview",
+          "version": 1,
+          "weekStart": ""
+        }
 
 resources:
   requests:
