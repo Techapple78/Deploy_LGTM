@@ -126,6 +126,7 @@ Objets locaux hors Git:
 | --- | --- |
 | `observability/snmp-exporter-config` | Secret Kubernetes contenant `snmp.yml` et la community SNMP. |
 | `observability/pfsense-snmp-target` | Service headless + Endpoints pointant vers pfSense. |
+| `observability/synology-snmp-target` | Service headless + Endpoints pointant vers le NAS DSM. |
 
 Modules SNMP actives:
 
@@ -136,6 +137,7 @@ Modules SNMP actives:
 | `hrStorage` | Volumes et filesystems. |
 | `ucd_memory` | Memoire. |
 | `ucd_system_stats` | Compteurs CPU systeme. |
+| `synology` | Etat DSM, disques, temperatures, ventilateurs, volumes Synology. |
 
 Metriques validees:
 
@@ -145,6 +147,45 @@ ifHCInOctets{app="pfsense"}
 hrSystemUptime{app="pfsense"}
 memTotalReal{app="pfsense"}
 ssCpuRawUser{app="pfsense"}
+```
+
+## Integration Synology DSM SNMP
+
+La collecte DSM utilise le meme `snmp-exporter` et le meme secret local que pfSense, mais avec une cible separee:
+
+```text
+Synology DSM UDP/161
+  <- snmp-exporter
+  <- Alloy /snmp scrape
+  -> Mimir
+  -> Grafana
+```
+
+Nom fonctionnel utilise dans les labels:
+
+```text
+synology.example.local
+```
+
+Scrapes Alloy:
+
+| Scrape | Module | Usage |
+| --- | --- | --- |
+| `synology_snmp_nas` | `synology` | Disques, temperatures, sante DSM/Synology. |
+| `synology_snmp_interfaces` | `if_mib` | Trafic reseau. |
+| `synology_snmp_system` | `hrSystem` | Uptime. |
+| `synology_snmp_storage` | `hrStorage` | Volumes et filesystems. |
+
+Metriques validees:
+
+```promql
+up{app="synology"}
+diskHealthStatus{app="synology"}
+diskTemperature{app="synology"}
+diskBadSector{app="synology"}
+ifHCInOctets{app="synology"}
+hrSystemUptime{app="synology"}
+hrStorageSize{app="synology"}
 ```
 
 ## Credentials
@@ -173,6 +214,7 @@ Arborescence Grafana proposee:
 Deploy_LGTM
   Deploy_LGTM vCenter Logs Overview
   Deploy_LGTM pfSense Overview
+  Deploy_LGTM Synology DSM Overview
   Infra
     VMware Metrics Overview
     Firewall Overview
@@ -226,6 +268,7 @@ Panels prioritaires:
 | --- | --- |
 | vCenter Logs Overview | volume logs, erreurs, warnings, evenements recents |
 | pfSense Overview | statut SNMP, uptime, memoire, CPU, trafic interfaces, filesystems, logs |
+| Synology DSM Overview | statut SNMP, uptime, volumes, trafic, temperatures, sante disques, logs |
 | VMware Metrics Overview | hosts, VM, datastores, CPU ready, memoire, evenements critiques |
 | Firewall Overview | interfaces, gateways, drops, VPN, CPU/RAM, logs blocks |
 | NAS Overview | volumes, storage pool, SMART, temperature, reseau |

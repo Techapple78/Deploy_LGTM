@@ -213,6 +213,86 @@ alloy:
         forward_to   = [prometheus.remote_write.mimir.receiver]
       }
 
+      prometheus.scrape "synology_snmp_nas" {
+        targets = [
+          {
+            "__address__"     = "snmp-exporter.observability.svc.cluster.local:9116",
+            "__param_target"  = "synology-snmp-target.observability.svc.cluster.local",
+            "__param_module"  = "synology",
+            "__param_auth"    = "public_v2",
+            "app"             = "synology",
+            "environment"     = "infra",
+            "namespace"       = "observability",
+            "service"         = "snmp",
+            "component"       = "nas",
+            "instance"        = "synology.example.local",
+            "snmp_module"     = "synology",
+          },
+        ]
+        metrics_path = "/snmp"
+        forward_to   = [prometheus.remote_write.mimir.receiver]
+      }
+
+      prometheus.scrape "synology_snmp_interfaces" {
+        targets = [
+          {
+            "__address__"     = "snmp-exporter.observability.svc.cluster.local:9116",
+            "__param_target"  = "synology-snmp-target.observability.svc.cluster.local",
+            "__param_module"  = "if_mib",
+            "__param_auth"    = "public_v2",
+            "app"             = "synology",
+            "environment"     = "infra",
+            "namespace"       = "observability",
+            "service"         = "snmp",
+            "component"       = "nas",
+            "instance"        = "synology.example.local",
+            "snmp_module"     = "if_mib",
+          },
+        ]
+        metrics_path = "/snmp"
+        forward_to   = [prometheus.remote_write.mimir.receiver]
+      }
+
+      prometheus.scrape "synology_snmp_system" {
+        targets = [
+          {
+            "__address__"     = "snmp-exporter.observability.svc.cluster.local:9116",
+            "__param_target"  = "synology-snmp-target.observability.svc.cluster.local",
+            "__param_module"  = "hrSystem",
+            "__param_auth"    = "public_v2",
+            "app"             = "synology",
+            "environment"     = "infra",
+            "namespace"       = "observability",
+            "service"         = "snmp",
+            "component"       = "nas",
+            "instance"        = "synology.example.local",
+            "snmp_module"     = "hrSystem",
+          },
+        ]
+        metrics_path = "/snmp"
+        forward_to   = [prometheus.remote_write.mimir.receiver]
+      }
+
+      prometheus.scrape "synology_snmp_storage" {
+        targets = [
+          {
+            "__address__"     = "snmp-exporter.observability.svc.cluster.local:9116",
+            "__param_target"  = "synology-snmp-target.observability.svc.cluster.local",
+            "__param_module"  = "hrStorage",
+            "__param_auth"    = "public_v2",
+            "app"             = "synology",
+            "environment"     = "infra",
+            "namespace"       = "observability",
+            "service"         = "snmp",
+            "component"       = "nas",
+            "instance"        = "synology.example.local",
+            "snmp_module"     = "hrStorage",
+          },
+        ]
+        metrics_path = "/snmp"
+        forward_to   = [prometheus.remote_write.mimir.receiver]
+      }
+
       otelcol.receiver.otlp "default" {
         grpc {}
         http {}
