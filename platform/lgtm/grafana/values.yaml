@@ -18,19 +18,16 @@ datasources:
     apiVersion: 1
     datasources:
       - name: Loki
-        uid: Loki
         type: loki
         access: proxy
         url: http://loki-gateway.observability.svc.cluster.local
         isDefault: false
       - name: Mimir
-        uid: Mimir
         type: prometheus
         access: proxy
         url: http://mimir-gateway.observability.svc.cluster.local/prometheus
         isDefault: true
       - name: Tempo
-        uid: Tempo
         type: tempo
         access: proxy
         url: http://tempo.observability.svc.cluster.local:3100
@@ -77,10 +74,7 @@ dashboards:
           "links": [],
           "panels": [
             {
-              "datasource": {
-                "type": "prometheus",
-                "uid": "Mimir"
-              },
+              "datasource": "Mimir",
               "fieldConfig": {
                 "defaults": {
                   "color": {
@@ -135,10 +129,7 @@ dashboards:
               "type": "stat"
             },
             {
-              "datasource": {
-                "type": "prometheus",
-                "uid": "Mimir"
-              },
+              "datasource": "Mimir",
               "fieldConfig": {
                 "defaults": {
                   "color": {
@@ -192,10 +183,7 @@ dashboards:
               "type": "stat"
             },
             {
-              "datasource": {
-                "type": "prometheus",
-                "uid": "Mimir"
-              },
+              "datasource": "Mimir",
               "fieldConfig": {
                 "defaults": {
                   "unit": "reqps"
@@ -230,10 +218,7 @@ dashboards:
               "type": "timeseries"
             },
             {
-              "datasource": {
-                "type": "prometheus",
-                "uid": "Mimir"
-              },
+              "datasource": "Mimir",
               "fieldConfig": {
                 "defaults": {
                   "unit": "s"
@@ -268,10 +253,7 @@ dashboards:
               "type": "timeseries"
             },
             {
-              "datasource": {
-                "type": "loki",
-                "uid": "Loki"
-              },
+              "datasource": "Loki",
               "gridPos": {
                 "h": 9,
                 "w": 24,

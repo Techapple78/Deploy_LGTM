@@ -94,19 +94,20 @@ spec:
           ports:
             - name: metrics
               containerPort: 9104
+          args:
+            - --mysqld.address=sample-mysql.sample-app.svc.cluster.local:3306
+            - --mysqld.username=$(MYSQL_USER)
           env:
             - name: MYSQL_USER
               valueFrom:
                 secretKeyRef:
                   name: sample-app-mysql
                   key: MYSQL_USER
-            - name: MYSQL_PASSWORD
+            - name: MYSQLD_EXPORTER_PASSWORD
               valueFrom:
                 secretKeyRef:
                   name: sample-app-mysql
                   key: MYSQL_PASSWORD
-            - name: DATA_SOURCE_NAME
-              value: "$(MYSQL_USER):$(MYSQL_PASSWORD)@(sample-mysql.sample-app.svc.cluster.local:3306)/"
           resources:
             requests:
               cpu: 25m
@@ -140,7 +141,7 @@ spec:
           command:
             - sh
             - -c
-            - cp -r /src/* /app/ && cd /app && npm install --omit=dev
+            - cp -L /src/package.json /src/otel.js /src/server.js /app/ && cd /app && ls -la && npm install --omit=dev
           volumeMounts:
             - name: app-source
               mountPath: /src
