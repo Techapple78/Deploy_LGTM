@@ -57,7 +57,6 @@ alloy:
           address                 = "0.0.0.0:1514"
           protocol                = "tcp"
           syslog_format           = "raw"
-          use_incoming_timestamp  = true
           labels                  = {
             job         = "infra-syslog",
             source_type = "infra",
@@ -69,7 +68,6 @@ alloy:
           address                 = "0.0.0.0:1514"
           protocol                = "udp"
           syslog_format           = "raw"
-          use_incoming_timestamp  = true
           labels                  = {
             job         = "infra-syslog",
             source_type = "infra",
