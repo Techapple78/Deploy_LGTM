@@ -7,6 +7,46 @@
 - Verifier Kyverno: `kubectl -n kyverno get pods`.
 - Verifier Sealed Secrets: `kubectl -n kube-system logs deploy/sealed-secrets-controller --tail=100`.
 
+## Acces Grafana
+
+L'acces cible passe par Traefik en HTTPS:
+
+```text
+https://grafana.example.local
+```
+
+Le poste d'administration doit resoudre ce nom vers l'adresse exposee par Traefik. En environnement lab, ajouter par exemple dans `C:\Windows\System32\drivers\etc\hosts`:
+
+```text
+192.0.2.10 grafana.example.local
+```
+
+Si le certificat bloque le navigateur ou si l'Ingress n'est pas encore stabilise, utiliser un acces local sans TLS:
+
+```powershell
+kubectl -n observability port-forward svc/grafana 3000:80
+```
+
+Puis ouvrir:
+
+```text
+http://127.0.0.1:3000
+```
+
+Les identifiants administrateur Grafana sont stockes dans le secret Kubernetes `observability/grafana-admin`. Quand l'API K3S repond, les recuperer avec:
+
+```powershell
+kubectl -n observability get secret grafana-admin -o jsonpath="{.data.admin-user}" | %{ [Text.Encoding]::UTF8.GetString([Convert]::FromBase64String($_)) }
+
+kubectl -n observability get secret grafana-admin -o jsonpath="{.data.admin-password}" | %{ [Text.Encoding]::UTF8.GetString([Convert]::FromBase64String($_)) }
+```
+
+Le dashboard applicatif provisionne est attendu dans le dossier Grafana `Deploy_LGTM`, sous le nom:
+
+```text
+Deploy_LGTM Sample App Overview
+```
+
 ## Sauvegardes
 
 - Sauvegarder la cle privee Sealed Secrets avec chiffrement fort.
