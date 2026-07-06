@@ -1,4 +1,4 @@
-﻿# Checklist de validation post-deploiement
+# Checklist de validation post-deploiement
 
 ## Git et CI
 
@@ -40,4 +40,6 @@
 - Kyverno est en mode `Audit` pour le MVP.
 - Les violations Kyverno sont examinees avant passage en `Enforce`.
 - Les manifests ne demandent pas de privilege inutile.
+- Les flux reseau et leur exhaustivite sont documentes dans [04-network-flows.md](04-network-flows.md).
+- L'audit de durcissement CIS/K3s/Kubernetes est documente dans [09-hardening-audit.md](09-hardening-audit.md).
 

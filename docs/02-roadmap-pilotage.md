@@ -1,4 +1,4 @@
-﻿# Roadmap et pilotage du projet
+# Roadmap et pilotage du projet
 
 ## Vision
 
@@ -85,7 +85,7 @@ Critere de sortie:
 
 Rapport de suivi:
 
-- `docs/reports/phase-4-first-gitops-sync.md`
+- `docs/reports/92-phase-4-first-gitops-sync.md`
 
 ### Phase 5 - Stabilisation production legere
 

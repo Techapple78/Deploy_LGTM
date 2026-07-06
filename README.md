@@ -1,4 +1,4 @@
-﻿# Deploy_LGTM
+# Deploy_LGTM
 
 Deploy_LGTM est un socle GitOps pour deployer une stack LGTM sur un cluster Kubernetes K3S existant, heberge sur des VM vSphere ESXi.
 
@@ -27,11 +27,21 @@ Le depot cible est `Techapple78/Deploy_LGTM`. Le cluster K3S est considere deja 
 |   |-- dev/kustomization.yaml
 |   `-- prod/kustomization.yaml
 |-- docs/
-|   |-- architecture.md
-|   |-- bootstrap.md
-|   |-- operations.md
-|   |-- security.md
-|   `-- troubleshooting.md
+|   |-- 00-README.md
+|   |-- 01-architecture.md
+|   |-- 02-roadmap-pilotage.md
+|   |-- 03-pods-inventory.md
+|   |-- 04-network-flows.md
+|   |-- 05-bootstrap.md
+|   |-- 06-ci-workflows.md
+|   |-- 07-security.md
+|   |-- 08-security-hardening-plan.md
+|   |-- 09-hardening-audit.md
+|   |-- 10-operations.md
+|   |-- 11-troubleshooting.md
+|   |-- 12-validation-checklist.md
+|   |-- 90-phase-2.md
+|   `-- 91-phase-3.md
 |-- gitops/argocd/
 |   |-- app-of-apps/root-app.yaml
 |   `-- apps/*.yaml
@@ -86,16 +96,16 @@ helm upgrade --install argocd argo/argo-cd --namespace argocd --wait
 kubectl apply -f gitops/argocd/app-of-apps/root-app.yaml
 ```
 
-Les commandes detaillees sont dans [docs/bootstrap.md](docs/bootstrap.md).
+Les commandes detaillees sont dans [docs/05-bootstrap.md](docs/05-bootstrap.md).
 
 Les secrets importes restent locaux dans `secrets/tmp/` jusqu'a generation de SealedSecrets.
 
-La phase 2 du MVP deployable controle est documentee dans [docs/phase-2.md](docs/phase-2.md).
-La phase 3 de pre-deploiement controle est documentee dans [docs/phase-3.md](docs/phase-3.md).
-L'inventaire des pods et les schemas de fonctionnement sont dans [docs/pods-inventory.md](docs/pods-inventory.md).
-La roadmap et le pilotage projet sont dans [docs/roadmap-pilotage.md](docs/roadmap-pilotage.md).
-Le plan de durcissement avant iteration 4 est dans [docs/security-hardening-plan.md](docs/security-hardening-plan.md).
-Le fonctionnement des workflows CI est explique dans [docs/ci-workflows.md](docs/ci-workflows.md).
+La phase 2 du MVP deployable controle est documentee dans [docs/90-phase-2.md](docs/90-phase-2.md).
+La phase 3 de pre-deploiement controle est documentee dans [docs/91-phase-3.md](docs/91-phase-3.md).
+L'inventaire des pods et les schemas de fonctionnement sont dans [docs/03-pods-inventory.md](docs/03-pods-inventory.md).
+La roadmap et le pilotage projet sont dans [docs/02-roadmap-pilotage.md](docs/02-roadmap-pilotage.md).
+Le plan de durcissement avant iteration 4 est dans [docs/08-security-hardening-plan.md](docs/08-security-hardening-plan.md).
+Le fonctionnement des workflows CI est explique dans [docs/06-ci-workflows.md](docs/06-ci-workflows.md).
 
 ## Choix humains a confirmer
 
@@ -117,7 +127,7 @@ Le fonctionnement des workflows CI est explique dans [docs/ci-workflows.md](docs
 - Kyverno bloque les manifests non conformes.
 - Aucun secret en clair dans `git status`, `git grep` ou les artefacts CI.
 
-La checklist complete est dans [docs/validation-checklist.md](docs/validation-checklist.md).
+La checklist complete est dans [docs/12-validation-checklist.md](docs/12-validation-checklist.md).
 
 ## Methode iterative
 

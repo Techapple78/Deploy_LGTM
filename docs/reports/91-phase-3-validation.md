@@ -1,4 +1,4 @@
-﻿# Rapport de validation Phase 3
+# Rapport de validation Phase 3
 
 Date: 2026-07-03
 
@@ -81,7 +81,7 @@ Terminer l'iteration SEC-0, puis installer/synchroniser l'app-of-apps ArgoCD en 
 
 ## Documentation ajoutee apres analyse pods
 
-- `docs/pods-inventory.md`
-- `docs/roadmap-pilotage.md`
+- `docs/03-pods-inventory.md`
+- `docs/02-roadmap-pilotage.md`
 
 

@@ -1,4 +1,4 @@
-﻿# Phase 3 - Pre-deploiement controle
+# Phase 3 - Pre-deploiement controle
 
 ## Etat realise
 
@@ -97,8 +97,8 @@ python -c "import yaml, pathlib; [print(p.name, list(yaml.safe_load_all(p.read_t
 
 ## Documentation associee
 
-- Inventaire des pods et schemas: `docs/pods-inventory.md`
-- Roadmap et pilotage: `docs/roadmap-pilotage.md`
-- Plan de durcissement SEC-0: `docs/security-hardening-plan.md`
+- Inventaire des pods et schemas: `docs/03-pods-inventory.md`
+- Roadmap et pilotage: `docs/02-roadmap-pilotage.md`
+- Plan de durcissement SEC-0: `docs/08-security-hardening-plan.md`
 
 

@@ -45,6 +45,6 @@ La commande ne doit retourner aucune valeur sensible en clair. Les fichiers dans
 - Signer les images et verifier les signatures en admission.
 - Ajouter SBOM et scan de dependances.
 
-Le plan detaille avant l'iteration 4 est documente dans [security-hardening-plan.md](security-hardening-plan.md).
+Le plan detaille avant l'iteration 4 est documente dans [08-security-hardening-plan.md](08-security-hardening-plan.md).
 
-Les controles CI `lint`, `render`, `security` et `sbom` sont detailles dans [ci-workflows.md](ci-workflows.md).
+Les controles CI `lint`, `render`, `security` et `sbom` sont detailles dans [06-ci-workflows.md](06-ci-workflows.md).
