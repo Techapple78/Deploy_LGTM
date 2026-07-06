@@ -120,18 +120,60 @@ Arborescence Grafana proposee:
 
 ```text
 Deploy_LGTM
+  Deploy_LGTM vCenter Logs Overview
   Infra
-    VMware Overview
+    VMware Metrics Overview
     Firewall Overview
     NAS Overview
     iLO Hardware
 ```
 
+### Dashboard vCenter Logs Overview
+
+Le dashboard `Deploy_LGTM vCenter Logs Overview` est provisionne dans Grafana depuis Git.
+
+Objectif:
+
+- valider rapidement que les logs vCenter arrivent dans Loki;
+- suivre le volume d'evenements vCenter;
+- isoler les erreurs, warnings et evenements critiques;
+- donner une premiere vue exploitable avant l'ajout d'un exporter vSphere.
+
+Datasource:
+
+```text
+Loki
+```
+
+Requete de base:
+
+```logql
+{job="infra-syslog"} |~ "(?i)(vcenter|vsphere|vmware|vpxd|hostd|vpxa|eam|sps|cis-license)"
+```
+
+Panels provisionnes:
+
+| Panel | Role |
+| --- | --- |
+| `vCenter Events` | Nombre total d'evenements vCenter sur la periode. |
+| `Critical/Error Events` | Volume d'evenements critiques ou erreurs. |
+| `vCenter Log Rate` | Debit de logs vCenter par protocole d'ingestion. |
+| `Warning/Error Distribution` | Evolution des warnings et erreurs detectes. |
+| `Recent vCenter Logs` | Vue brute des derniers logs vCenter. |
+| `Recent vCenter Warnings and Errors` | Vue filtree sur les messages a traiter en priorite. |
+
+Limite volontaire:
+
+- le dashboard exploite les logs syslog bruts collectes par Alloy;
+- aucune adresse reelle, hostname sensible ou credential n'est encode dans Git;
+- les metriques vSphere detaillees, par exemple hosts, VM, datastores, CPU ready et memoire, necessitent un exporter API vSphere dedie.
+
 Panels prioritaires:
 
 | Dashboard | Panels |
 | --- | --- |
-| VMware Overview | hosts, VM, datastores, CPU ready, memoire, evenements critiques |
+| vCenter Logs Overview | volume logs, erreurs, warnings, evenements recents |
+| VMware Metrics Overview | hosts, VM, datastores, CPU ready, memoire, evenements critiques |
 | Firewall Overview | interfaces, gateways, drops, VPN, CPU/RAM, logs blocks |
 | NAS Overview | volumes, storage pool, SMART, temperature, reseau |
 | iLO Hardware | health global, fans, PSU, temperature, disques |

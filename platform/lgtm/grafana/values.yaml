@@ -301,6 +301,288 @@ dashboards:
           "version": 1,
           "weekStart": ""
         }
+    vcenter-logs-overview:
+      json: |
+        {
+          "annotations": {
+            "list": [
+              {
+                "builtIn": 1,
+                "datasource": {
+                  "type": "grafana",
+                  "uid": "-- Grafana --"
+                },
+                "enable": true,
+                "hide": true,
+                "iconColor": "rgba(0, 211, 255, 1)",
+                "name": "Annotations & Alerts",
+                "type": "dashboard"
+              }
+            ]
+          },
+          "editable": true,
+          "fiscalYearStartMonth": 0,
+          "graphTooltip": 0,
+          "id": null,
+          "links": [],
+          "panels": [
+            {
+              "datasource": "Loki",
+              "fieldConfig": {
+                "defaults": {
+                  "color": {
+                    "mode": "thresholds"
+                  },
+                  "thresholds": {
+                    "mode": "absolute",
+                    "steps": [
+                      {
+                        "color": "green",
+                        "value": null
+                      }
+                    ]
+                  },
+                  "unit": "short"
+                },
+                "overrides": []
+              },
+              "gridPos": {
+                "h": 4,
+                "w": 6,
+                "x": 0,
+                "y": 0
+              },
+              "id": 1,
+              "options": {
+                "colorMode": "value",
+                "graphMode": "area",
+                "justifyMode": "auto",
+                "orientation": "auto",
+                "reduceOptions": {
+                  "calcs": [
+                    "lastNotNull"
+                  ],
+                  "fields": "",
+                  "values": false
+                },
+                "textMode": "auto"
+              },
+              "targets": [
+                {
+                  "expr": "sum(count_over_time({job=\"infra-syslog\"} |~ \"(?i)(vcenter|vsphere|vmware|vpxd|hostd|vpxa|eam|sps|cis-license)\" [$__range]))",
+                  "refId": "A"
+                }
+              ],
+              "title": "vCenter Events",
+              "type": "stat"
+            },
+            {
+              "datasource": "Loki",
+              "fieldConfig": {
+                "defaults": {
+                  "color": {
+                    "mode": "thresholds"
+                  },
+                  "thresholds": {
+                    "mode": "absolute",
+                    "steps": [
+                      {
+                        "color": "green",
+                        "value": null
+                      },
+                      {
+                        "color": "orange",
+                        "value": 1
+                      },
+                      {
+                        "color": "red",
+                        "value": 10
+                      }
+                    ]
+                  },
+                  "unit": "short"
+                },
+                "overrides": []
+              },
+              "gridPos": {
+                "h": 4,
+                "w": 6,
+                "x": 6,
+                "y": 0
+              },
+              "id": 2,
+              "options": {
+                "colorMode": "background",
+                "graphMode": "area",
+                "justifyMode": "auto",
+                "orientation": "auto",
+                "reduceOptions": {
+                  "calcs": [
+                    "lastNotNull"
+                  ],
+                  "fields": "",
+                  "values": false
+                },
+                "textMode": "auto"
+              },
+              "targets": [
+                {
+                  "expr": "sum(count_over_time({job=\"infra-syslog\"} |~ \"(?i)(vcenter|vsphere|vmware|vpxd|hostd|vpxa|eam|sps|cis-license)\" |~ \"(?i)(error|critical|fatal|panic|failed|failure)\" [$__range]))",
+                  "refId": "A"
+                }
+              ],
+              "title": "Critical/Error Events",
+              "type": "stat"
+            },
+            {
+              "datasource": "Loki",
+              "fieldConfig": {
+                "defaults": {
+                  "unit": "eps"
+                },
+                "overrides": []
+              },
+              "gridPos": {
+                "h": 8,
+                "w": 12,
+                "x": 0,
+                "y": 4
+              },
+              "id": 3,
+              "options": {
+                "legend": {
+                  "displayMode": "table",
+                  "placement": "bottom"
+                },
+                "tooltip": {
+                  "mode": "multi",
+                  "sort": "none"
+                }
+              },
+              "targets": [
+                {
+                  "expr": "sum(rate({job=\"infra-syslog\"} |~ \"(?i)(vcenter|vsphere|vmware|vpxd|hostd|vpxa|eam|sps|cis-license)\" [$__rate_interval])) by (protocol)",
+                  "legendFormat": "{{protocol}}",
+                  "refId": "A"
+                }
+              ],
+              "title": "vCenter Log Rate",
+              "type": "timeseries"
+            },
+            {
+              "datasource": "Loki",
+              "fieldConfig": {
+                "defaults": {
+                  "unit": "short"
+                },
+                "overrides": []
+              },
+              "gridPos": {
+                "h": 8,
+                "w": 12,
+                "x": 12,
+                "y": 4
+              },
+              "id": 4,
+              "options": {
+                "legend": {
+                  "displayMode": "table",
+                  "placement": "bottom"
+                },
+                "tooltip": {
+                  "mode": "multi",
+                  "sort": "none"
+                }
+              },
+              "targets": [
+                {
+                  "expr": "sum(count_over_time({job=\"infra-syslog\"} |~ \"(?i)(vcenter|vsphere|vmware|vpxd|hostd|vpxa|eam|sps|cis-license)\" |~ \"(?i)(warning|warn|error|critical|fatal|failed|failure)\" [$__rate_interval])) by (detected_level)",
+                  "legendFormat": "{{detected_level}}",
+                  "refId": "A"
+                }
+              ],
+              "title": "Warning/Error Distribution",
+              "type": "timeseries"
+            },
+            {
+              "datasource": "Loki",
+              "gridPos": {
+                "h": 10,
+                "w": 24,
+                "x": 0,
+                "y": 12
+              },
+              "id": 5,
+              "options": {
+                "dedupStrategy": "none",
+                "enableLogDetails": true,
+                "prettifyLogMessage": true,
+                "showCommonLabels": false,
+                "showLabels": true,
+                "showTime": true,
+                "sortOrder": "Descending",
+                "wrapLogMessage": true
+              },
+              "targets": [
+                {
+                  "expr": "{job=\"infra-syslog\"} |~ \"(?i)(vcenter|vsphere|vmware|vpxd|hostd|vpxa|eam|sps|cis-license)\"",
+                  "refId": "A"
+                }
+              ],
+              "title": "Recent vCenter Logs",
+              "type": "logs"
+            },
+            {
+              "datasource": "Loki",
+              "gridPos": {
+                "h": 8,
+                "w": 24,
+                "x": 0,
+                "y": 22
+              },
+              "id": 6,
+              "options": {
+                "dedupStrategy": "none",
+                "enableLogDetails": true,
+                "prettifyLogMessage": true,
+                "showCommonLabels": false,
+                "showLabels": true,
+                "showTime": true,
+                "sortOrder": "Descending",
+                "wrapLogMessage": true
+              },
+              "targets": [
+                {
+                  "expr": "{job=\"infra-syslog\"} |~ \"(?i)(vcenter|vsphere|vmware|vpxd|hostd|vpxa|eam|sps|cis-license)\" |~ \"(?i)(error|critical|fatal|panic|failed|failure|warning|warn)\"",
+                  "refId": "A"
+                }
+              ],
+              "title": "Recent vCenter Warnings and Errors",
+              "type": "logs"
+            }
+          ],
+          "refresh": "30s",
+          "schemaVersion": 39,
+          "tags": [
+            "deploy-lgtm",
+            "vcenter",
+            "infra",
+            "loki"
+          ],
+          "templating": {
+            "list": []
+          },
+          "time": {
+            "from": "now-1h",
+            "to": "now"
+          },
+          "timepicker": {},
+          "timezone": "browser",
+          "title": "Deploy_LGTM vCenter Logs Overview",
+          "uid": "deploy-lgtm-vcenter-logs",
+          "version": 1,
+          "weekStart": ""
+        }
 
 resources:
   requests:
