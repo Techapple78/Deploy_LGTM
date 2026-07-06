@@ -11,6 +11,14 @@ alloy:
       port: 4318
       targetPort: 4318
       protocol: TCP
+    - name: syslog-tcp
+      port: 1514
+      targetPort: 1514
+      protocol: TCP
+    - name: syslog-udp
+      port: 1514
+      targetPort: 1514
+      protocol: UDP
   configMap:
     create: true
     content: |
@@ -32,6 +40,42 @@ alloy:
         endpoint {
           url = "http://loki-gateway.observability.svc.cluster.local/loki/api/v1/push"
         }
+      }
+
+      loki.relabel "syslog" {
+        rule {
+          action = "labelmap"
+          regex  = "__syslog_(.+)"
+        }
+      }
+
+      loki.source.syslog "infra" {
+        listener {
+          address                 = "0.0.0.0:1514"
+          protocol                = "tcp"
+          syslog_format           = "rfc3164"
+          use_incoming_timestamp  = true
+          labels                  = {
+            job         = "infra-syslog",
+            source_type = "infra",
+            protocol    = "tcp",
+          }
+        }
+
+        listener {
+          address                 = "0.0.0.0:1514"
+          protocol                = "udp"
+          syslog_format           = "rfc3164"
+          use_incoming_timestamp  = true
+          labels                  = {
+            job         = "infra-syslog",
+            source_type = "infra",
+            protocol    = "udp",
+          }
+        }
+
+        relabel_rules = loki.relabel.syslog.rules
+        forward_to    = [loki.write.default.receiver]
       }
 
       prometheus.remote_write "mimir" {

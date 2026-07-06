@@ -1,0 +1,22 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: alloy-extras
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "31"
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/Techapple78/Deploy_LGTM.git
+    targetRevision: main
+    path: platform/lgtm/alloy-extras
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: observability
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
