@@ -6,6 +6,8 @@ Ce document decrit le modele cible pour raccorder une application web maitrisee 
 
 Le projet ne fournit plus d'application temoin externe. L'ancienne piste basee sur une application exemple tierce est abandonnee, car elle n'est pas maintenue, n'est pas maitrisee par le projet et ne doit pas etre consideree comme une base securisee.
 
+OpenTelemetry Demo reste une reference documentaire valable pour comprendre les conventions OpenTelemetry, les flux OTLP, la correlation logs/traces/metriques et les patterns d'instrumentation. Elle n'est pas deployee par ce depot.
+
 ## Principe retenu
 
 Toute future application de test doit etre:
@@ -16,6 +18,14 @@ Toute future application de test doit etre:
 - construite avec une image epinglee;
 - instrumentee volontairement;
 - deployee via GitOps seulement apres revue securite.
+
+## Reference conservee
+
+| Reference | Usage | Statut |
+| --- | --- | --- |
+| `open-telemetry/opentelemetry-demo` | Reference officielle d'instrumentation, conventions OTLP, traces, metriques et logs. | Conservee comme modele documentaire, non deployee. |
+
+Cette reference sert a guider l'instrumentation d'une future application maitrisee, pas a introduire un workload externe dans `Deploy_LGTM`.
 
 ## Architecture cible
 
@@ -123,3 +133,5 @@ Browser request
 ## Decision
 
 La prochaine application de validation LGTM devra etre creee comme composant maitrise du projet ou comme depot applicatif controle. Aucun deploiement base sur une application exemple tierce non maintenue ne doit etre ajoute au GitOps `Deploy_LGTM`.
+
+OpenTelemetry Demo reste autorisee comme reference d'architecture et de nomenclature, sans deploiement automatique.

@@ -95,6 +95,8 @@ Lecture conseillee pour integrer une application test:
 1. [04-network-flows.md](04-network-flows.md)
 2. [integrations/01-html-css-js-mysql-lgtm.md](integrations/01-html-css-js-mysql-lgtm.md)
 3. [integrations/02-infra-monitoring-lgtm.md](integrations/02-infra-monitoring-lgtm.md)
+4. [reports/93-application-telemetry-integration-plan.md](reports/93-application-telemetry-integration-plan.md)
+5. [reports/94-phase-5-application-telemetry-deployment-plan.md](reports/94-phase-5-application-telemetry-deployment-plan.md)
 
 ## Architecture documentaire cible
 
@@ -128,6 +130,8 @@ flowchart TD
   Start --> Integrations[Integrations applicatives]
   Integrations --> AppLGTM[integrations/01-html-css-js-mysql-lgtm.md]
   Integrations --> InfraLGTM[integrations/02-infra-monitoring-lgtm.md]
+  Integrations --> AppReport[reports/93-application-telemetry-integration-plan.md]
+  Integrations --> AppDeploy[reports/94-phase-5-application-telemetry-deployment-plan.md]
 ```
 
 ## Parcours par profil
@@ -164,7 +168,9 @@ flowchart TD
 
 1. [04-network-flows.md](04-network-flows.md)
 2. [integrations/01-html-css-js-mysql-lgtm.md](integrations/01-html-css-js-mysql-lgtm.md)
-3. [12-validation-checklist.md](12-validation-checklist.md)
+3. [reports/93-application-telemetry-integration-plan.md](reports/93-application-telemetry-integration-plan.md)
+4. [reports/94-phase-5-application-telemetry-deployment-plan.md](reports/94-phase-5-application-telemetry-deployment-plan.md)
+5. [12-validation-checklist.md](12-validation-checklist.md)
 
 ## Regles de maintien documentaire
 
