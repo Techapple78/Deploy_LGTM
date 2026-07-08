@@ -1,0 +1,12 @@
+# Exemple indicatif pour activer l'encryption at rest K3S.
+# Ne pas appliquer sans sauvegarde etcd/sqlite/datastore et test de restauration.
+#
+# K3S recommande d'utiliser la commande native:
+#   k3s secrets-encrypt enable
+#   k3s secrets-encrypt status
+#   k3s secrets-encrypt rotate-keys
+#
+# Ce fichier documente la decision; l'activation effective doit rester une
+# operation runbookee sur les noeuds serveurs.
+
+secrets-encryption: true

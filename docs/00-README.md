@@ -80,6 +80,9 @@ Lecture conseillee apres deploiement:
 | [reports/96-phase-5-test-results.md](reports/96-phase-5-test-results.md) | Resultats de campagne Phase 5: unitaire, global, stress, charge courte et regression. | Validation |
 | [reports/97-kube-bench-benchmark-plan.md](reports/97-kube-bench-benchmark-plan.md) | Planification SEC-1 du benchmark kube-bench CIS/K3S avant durcissement production. | Securite |
 | [reports/98-kube-bench-results.md](reports/98-kube-bench-results.md) | Resultats anonymises kube-bench et backlog Phase 6. | Securite |
+| [reports/99-phase-6-hardening-backlog.md](reports/99-phase-6-hardening-backlog.md) | Backlog Phase 6 avec criteres de sortie kube-bench. | Securite |
+| [reports/100-phase-6-hardening-execution.md](reports/100-phase-6-hardening-execution.md) | Application du backlog Phase 6 cote depot: audit logging, encryption, scripts et runbook. | Securite |
+| [runbooks/01-k3s-phase-6-hardening.md](runbooks/01-k3s-phase-6-hardening.md) | Procedure d'application, verification et rollback des changements K3S Phase 6. | Exploitation securite |
 | [reports/](reports/) | Rapports de validation et de synchronisation. | Historique |
 
 Lecture conseillee pour comprendre les decisions passees:
@@ -124,6 +127,9 @@ flowchart TD
   Sec --> Security[07-security.md]
   Sec --> Hardening[08-security-hardening-plan.md]
   Sec --> Audit[09-hardening-audit.md]
+  Sec --> Phase6Backlog[reports/99-phase-6-hardening-backlog.md]
+  Sec --> Phase6Runbook[runbooks/01-k3s-phase-6-hardening.md]
+  Sec --> Phase6Execution[reports/100-phase-6-hardening-execution.md]
 
   Start --> Ops[Exploitation]
   Ops --> Operations[10-operations.md]
@@ -191,6 +197,7 @@ flowchart TD
 - Tout changement GitOps significatif doit mettre a jour au moins un document de conception, d'exploitation ou de validation.
 - Toute nouvelle `NetworkPolicy` doit etre refletee dans [04-network-flows.md](04-network-flows.md).
 - Toute nouvelle policy Kyverno ou PSA doit etre refletee dans [08-security-hardening-plan.md](08-security-hardening-plan.md) ou [09-hardening-audit.md](09-hardening-audit.md).
+- Tout changement de configuration K3S doit etre accompagne d'un runbook, d'un rollback et d'un rapport dans [reports/](reports/).
 - Tout incident resolu doit alimenter [10-operations.md](10-operations.md) ou [11-troubleshooting.md](11-troubleshooting.md).
 - Chaque phase importante doit avoir un rapport dans [reports/](reports/) si elle change l'etat du cluster.
 - Toute integration applicative doit avoir un guide dans [integrations/](integrations/) et un rapport de planification ou de validation dans [reports/](reports/).

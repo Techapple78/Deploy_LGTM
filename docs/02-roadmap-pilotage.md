@@ -142,13 +142,32 @@ Rapport de planification:
 
 ### Phase 6 - Durcissement production
 
+Etat: en cours.
+
 Objectif:
 
-- TLS automatise.
-- NetworkPolicies.
-- SSO Grafana avec Keycloak optionnel.
-- Stockage objet pour Loki/Mimir/Tempo si volumetrie elevee.
-- SBOM, signature images, policy admission avancee.
+- Traiter le backlog kube-bench SEC-1.
+- Qualifier les ecarts K3S reels, non applicables ou faux positifs.
+- Activer ou planifier l'audit logging K3S.
+- Cartographier la PKI K3S avant toute decision de PKI externe.
+- Durcir RBAC, PSA/Kyverno, NetworkPolicies et TLS.
+- Rejouer kube-bench en sortie de phase.
+
+Critere de sortie:
+
+- Hardening maturity score cible: `75/100` minimum.
+- `FAIL` kube-bench control plane: `0 a 5`, tous justifies.
+- `FAIL` kube-bench agents: `0` ou justifies.
+- `WARN` kube-bench total: moins de `35`, tous classes.
+- Audit logging K3S defini et testable.
+- PKI K3S documentee.
+- Rapport post-durcissement publie.
+
+Rapport de backlog:
+
+- [reports/99-phase-6-hardening-backlog.md](reports/99-phase-6-hardening-backlog.md)
+- [reports/100-phase-6-hardening-execution.md](reports/100-phase-6-hardening-execution.md)
+- [runbooks/01-k3s-phase-6-hardening.md](runbooks/01-k3s-phase-6-hardening.md)
 
 ## Pilotage
 
@@ -198,11 +217,11 @@ Regle simple:
 
 Phase 6:
 
-1. Qualifier les `FAIL` kube-bench control plane: applicable, accepte temporairement, non applicable K3S ou faux positif.
-2. Verifier kubelet TLS cert/key sur tous les noeuds.
-3. Definir audit logging K3S.
-4. Evaluer encryption at rest des secrets Kubernetes.
-5. Auditer RBAC: `cluster-admin`, secrets, wildcards et creation de pods.
-6. Consolider PSA/Kyverno et NetworkPolicies avant enforcement production.
+1. Appliquer le runbook Phase 6 pendant une fenetre de maintenance K3S.
+2. Activer et verifier l'audit logging K3S.
+3. Qualifier les `FAIL` API server, admission, PKI/TLS et encryption at rest.
+4. Auditer RBAC avec les exports locaux `scripts/phase6`.
+5. Rejouer kube-bench sur le meme profil `k3s-cis-1.7`.
+6. Publier `docs/reports/100-kube-bench-after-hardening.md` ou renumeroter le rapport post-hardening si le rapport d'execution Phase 6 reste `100`.
 
 
