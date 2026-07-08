@@ -142,7 +142,7 @@ Rapport de planification:
 
 ### Phase 6 - Durcissement production
 
-Etat: en cours.
+Etat: termine cote socle critique, suivi SEC-3 planifie.
 
 Objectif:
 
@@ -167,7 +167,34 @@ Rapport de backlog:
 
 - [reports/99-phase-6-hardening-backlog.md](reports/99-phase-6-hardening-backlog.md)
 - [reports/100-phase-6-hardening-execution.md](reports/100-phase-6-hardening-execution.md)
+- [reports/101-phase-6-p2-p3-security-ops.md](reports/101-phase-6-p2-p3-security-ops.md)
+- [reports/102-kube-bench-after-phase-6.md](reports/102-kube-bench-after-phase-6.md)
 - [runbooks/01-k3s-phase-6-hardening.md](runbooks/01-k3s-phase-6-hardening.md)
+
+### Iteration SEC-3 - Durcissement residuel avant production exposee
+
+Etat: planifiee.
+
+Objectif:
+
+- Qualifier ou corriger les `3` FAIL control plane restants.
+- Qualifier ou corriger les `2` FAIL kubelet recurrents sur les agents.
+- Valider la collecte audit Loki/Grafana.
+- Reduire les violations Kyverno/PSA les plus actionnables.
+- Statuer sur les exceptions RBAC Traefik/ArgoCD.
+- Rejouer kube-bench et recalculer le score hardening.
+
+Critere de sortie:
+
+- Hardening maturity score cible: `80/100` minimum.
+- `FAIL` kube-bench: `0` ou tous justifies comme specificites K3S.
+- Alerting securite minimal valide ou planifie avec justification.
+- Exceptions RBAC/K3S documentees.
+- Rapport post SEC-3 publie.
+
+Rapport de planification:
+
+- [reports/103-sec-3-hardening-plan.md](reports/103-sec-3-hardening-plan.md)
 
 ## Pilotage
 
@@ -215,13 +242,13 @@ Regle simple:
 
 ## Prochaine iteration recommandee
 
-Phase 6:
+SEC-3:
 
-1. Appliquer le runbook Phase 6 pendant une fenetre de maintenance K3S.
-2. Activer et verifier l'audit logging K3S.
-3. Qualifier les `FAIL` API server, admission, PKI/TLS et encryption at rest.
-4. Auditer RBAC avec les exports locaux `scripts/phase6`.
-5. Rejouer kube-bench sur le meme profil `k3s-cis-1.7`.
-6. Publier `docs/reports/100-kube-bench-after-hardening.md` ou renumeroter le rapport post-hardening si le rapport d'execution Phase 6 reste `100`.
+1. Qualifier les controles `1.2.28`, `4.2.4` et `4.2.9`.
+2. Valider la collecte `{job="k3s-audit"}` dans Loki apres sync ArgoCD.
+3. Tester les durcissements kubelet compatibles K3S.
+4. Reduire les violations Kyverno/PSA actionnables.
+5. Statuer sur les exceptions RBAC Traefik/ArgoCD.
+6. Rejouer kube-bench et publier `docs/reports/104-kube-bench-after-sec-3.md`.
 
 

@@ -9,6 +9,8 @@ Transformer les resultats kube-bench SEC-1 en backlog de durcissement production
 Source principale:
 
 - [98-kube-bench-results.md](98-kube-bench-results.md)
+- [102-kube-bench-after-phase-6.md](102-kube-bench-after-phase-6.md)
+- [103-sec-3-hardening-plan.md](103-sec-3-hardening-plan.md)
 
 Score de depart:
 
@@ -40,6 +42,30 @@ Objectif kube-bench a la sortie:
 
 La cible n'est pas un score CIS officiel. C'est un seuil de pilotage interne pour verifier que les ecarts critiques sont traites ou justifies avant production exposee.
 
+## Evaluation SEC-2 apres Phase 6
+
+Resultat control plane apres Phase 6:
+
+| Iteration | PASS | FAIL | WARN | INFO | Lecture |
+| --- | ---: | ---: | ---: | ---: | --- |
+| SEC-1 initial | 79 | 25 | 66 | 59 | Baseline runtime apres Phase 5. |
+| SEC-2 post Phase 6 | 60 | 3 | 53 | 15 | API server, audit logs et encryption at rest corriges. |
+
+Resultat agents apres Phase 6:
+
+| Perimetre | PASS | FAIL | WARN | INFO | Lecture |
+| --- | ---: | ---: | ---: | ---: | --- |
+| Chaque agent | 14 | 2 | 2 | 5 | Les ecarts restants sont homogenes sur les kubelets. |
+
+Decision:
+
+- la Phase 6 atteint l'objectif critique: les `FAIL` control plane passent de
+  `22` a `3`;
+- le score de maturite remonte a `72/100`;
+- le cluster reste en pre-production durcie, pas encore production exposee;
+- les ecarts restants doivent etre traites dans un backlog SEC-2 dedie avant
+  tout passage production.
+
 ## Regles de traitement
 
 Chaque controle kube-bench `FAIL` ou `WARN` doit recevoir une decision:
@@ -59,6 +85,50 @@ Chaque controle kube-bench `FAIL` ou `WARN` doit recevoir une decision:
 | P1.3 | Verifier certificats API server et kubelet | `1.2.4`, `1.2.5`, `1.2.24`, `1.2.26`, `1.2.27`, `4.2.9` | Partiel: permissions TLS cartographiees; confirmation kube-bench a rejouer. |
 | P1.4 | Definir audit logging K3S | `1.2.18` a `1.2.21`, `3.2.1`, `3.2.2` | Fait: audit policy appliquee, logs produits, smoke test valide. |
 | P1.5 | Evaluer encryption at rest | `1.2.29`, `1.2.30` | Fait: `secrets-encrypt` actif, cle `AES-CBC`, rechiffrement termine. |
+
+## Backlog SEC-2 - Ecarts residuels apres Phase 6
+
+### Priorite P0 - Qualifier les derniers FAIL
+
+| ID | Controle | Sujet | Decision actuelle | Action attendue | Critere de sortie |
+| --- | --- | --- | --- | --- | --- |
+| SEC2-P0.1 | `1.2.28` | API server `--etcd-cafile` | Specificite K3S probable | Verifier la CA etcd effective et documenter le mapping K3S. | Controle classe `corrige`, `non applicable K3S` ou `faux positif documente`. |
+| SEC2-P0.2 | `4.2.4` | Kubelet read-only port | A verifier sur tous les noeuds | Confirmer la valeur effective `readOnlyPort: 0` ou appliquer `kubelet-arg`. | Plus de port read-only expose ou exception K3S prouvee. |
+| SEC2-P0.3 | `4.2.9` | Kubelet TLS cert/key | Specificite K3S possible | Verifier presence et usage de `serving-kubelet.crt/key` sur chaque noeud. | Controle classe ou corrige par configuration explicite. |
+
+### Priorite P1 - Durcissement kubelet compatible K3S
+
+| ID | Controle | Sujet | Action attendue | Risque |
+| --- | --- | --- | --- | --- |
+| SEC2-P1.1 | `4.2.12` | Ciphers kubelet | Tester `tls-cipher-suites` via `kubelet-arg` sur un noeud, puis generaliser. | Incompatibilite client ancien ou agent. |
+| SEC2-P1.2 | `4.2.13` | Pod PID limit | Definir une valeur `pod-max-pids` adaptee aux workloads LGTM. | Limite trop basse pouvant casser Mimir/Loki/Tempo. |
+| SEC2-P1.3 | `1.2.22` | API request timeout | Evaluer `request-timeout=300s` ou justification du defaut. | Effets sur operations longues. |
+
+### Priorite P2 - Admission et policies
+
+| ID | Controle | Sujet | Action attendue | Critere de sortie |
+| --- | --- | --- | --- | --- |
+| SEC2-P2.1 | `1.2.9` | `EventRateLimit` | Concevoir une configuration d'admission control dediee. | Test sans perte d'evenements critiques. |
+| SEC2-P2.2 | `1.2.11` | `AlwaysPullImages` | Decider selon registry/cache local; ne pas activer si usage offline/preload. | Decision documentee. |
+| SEC2-P2.3 | `5.2.x`, `5.7.2`, `5.7.3` | PSA/Kyverno/seccomp/securityContext | Reduire violations `runAsNonRoot` et `seccomp` namespace par namespace. | Baisse mesurable des PolicyReports `fail`. |
+| SEC2-P2.4 | `5.3.2` | NetworkPolicies par namespace | Etendre default deny/allowlist a `argocd` et `kyverno`. | Flux cartographies et policies testees. |
+
+### Priorite P3 - RBAC et exploitation securite
+
+| ID | Controle | Sujet | Action attendue | Critere de sortie |
+| --- | --- | --- | --- | --- |
+| SEC2-P3.1 | `5.1.1` | Bindings `cluster-admin` Traefik | Decider migration Traefik GitOps ou exception K3S long terme. | Binding reduit ou exception signee. |
+| SEC2-P3.2 | `5.1.2`, `5.1.3`, `5.1.4` | Secrets, wildcards, create pods | Reduire roles ArgoCD/operateurs apres inventaire d'usage. | Liste de roles reduits ou justifies. |
+| SEC2-P3.3 | `5.1.6` | Automount service account token | Desactiver par defaut sur workloads qui n'utilisent pas l'API Kubernetes. | Aucun pod applicatif inutilement tokenise. |
+| SEC2-P3.4 | Audit logs | Alerting Grafana | Observer 24h `{job="k3s-audit"}`, puis activer alertes secrets/RBAC/exec. | Alertes actives avec seuils non bruyants. |
+
+### Priorite P4 - Identite et production exposee
+
+| ID | Controle | Sujet | Action attendue | Critere de sortie |
+| --- | --- | --- | --- | --- |
+| SEC2-P4.1 | `3.1.1` a `3.1.3` | Authentification utilisateurs | Planifier OIDC/SSO pour administrateurs humains. | Acces humain decouple des certificats/token historiques. |
+| SEC2-P4.2 | `5.5.1` | Image provenance | Definir signature images internes et verification admission. | Politique image signee en Audit puis Enforce. |
+| SEC2-P4.3 | `5.4.2` | Secret storage externe | Evaluer Vault/SOPS/External Secrets selon cible production. | Decision ADR. |
 
 Critere de sortie P1:
 
@@ -133,12 +203,28 @@ Tableau attendu:
 
 Phase 6 peut demarrer par le lot P1.
 
-Priorite immediate:
+Priorite immediate SEC-2:
 
-1. rejouer `kube-bench` avec le profil `k3s-cis-1.7`;
-2. finaliser la decision `P1.3` sur les controles PKI/kubelet TLS;
+1. qualifier les trois `FAIL` restants: `1.2.28`, `4.2.4`, `4.2.9`;
+2. verifier explicitement les kubelets sur chaque noeud avant ajout de
+   `kubelet-arg`;
 3. synchroniser ArgoCD pour deployer la collecte audit Loki et le dashboard Grafana;
 4. valider les requetes `{job="k3s-audit"}` dans Loki;
 5. sauvegarder et controler les artefacts de chiffrement K3S hors Git;
 6. ouvrir un chantier RBAC dedie Traefik/ArgoCD;
-7. corriger les violations Kyverno `runAsNonRoot` et `seccomp`.
+7. corriger les violations Kyverno `runAsNonRoot` et `seccomp`;
+8. rejouer kube-bench en SEC-3 apres correction P0/P1.
+
+## Planification SEC-3
+
+Le backlog SEC-2 est transforme en iteration SEC-3 dans
+[103-sec-3-hardening-plan.md](103-sec-3-hardening-plan.md).
+
+Objectif SEC-3:
+
+- qualifier ou corriger les `3` FAIL control plane restants;
+- qualifier ou corriger les `2` FAIL kubelet recurrents sur les agents;
+- valider la collecte audit Loki/Grafana;
+- reduire au moins une famille de violations Kyverno/PSA;
+- statuer sur les exceptions RBAC Traefik/ArgoCD;
+- rejouer kube-bench et publier `104-kube-bench-after-sec-3.md`.
