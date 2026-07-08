@@ -30,46 +30,58 @@ alloy:
 
       discovery.kubernetes "pods" {
         role = "pod"
+
+        selectors {
+          role  = "pod"
+          field = "spec.nodeName=" + coalesce(sys.env("HOSTNAME"), constants.hostname)
+        }
       }
 
-      loki.source.kubernetes "pods" {
+      discovery.relabel "pod_logs" {
         targets    = discovery.kubernetes.pods.targets
-        forward_to = [loki.relabel.pods.receiver]
-      }
-
-      loki.relabel "pods" {
-        forward_to = [loki.write.default.receiver]
 
         rule {
           source_labels = ["__meta_kubernetes_namespace"]
+          action        = "replace"
           target_label  = "namespace"
         }
 
         rule {
           source_labels = ["__meta_kubernetes_pod_name"]
+          action        = "replace"
           target_label  = "pod"
         }
 
         rule {
           source_labels = ["__meta_kubernetes_pod_container_name"]
+          action        = "replace"
           target_label  = "container"
         }
 
         rule {
           source_labels = ["__meta_kubernetes_pod_node_name"]
+          action        = "replace"
           target_label  = "node"
         }
 
         rule {
           source_labels = ["__meta_kubernetes_pod_label_app_kubernetes_io_name"]
+          action        = "replace"
           target_label  = "app"
         }
 
         rule {
-          source_labels = ["__meta_kubernetes_namespace", "__meta_kubernetes_pod_name"]
+          source_labels = ["__meta_kubernetes_namespace", "__meta_kubernetes_pod_container_name"]
+          action        = "replace"
           separator     = "/"
           target_label  = "job"
+          replacement   = "$1"
         }
+      }
+
+      loki.source.kubernetes "pods" {
+        targets    = discovery.relabel.pod_logs.output
+        forward_to = [loki.write.default.receiver]
       }
 
       loki.write "default" {
