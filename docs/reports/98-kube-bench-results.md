@@ -6,6 +6,14 @@ Date: 2026-07-08
 
 Benchmark execute avec `kube-bench` sur le cluster K3S apres cloture de la Phase 5.
 
+Score de maturite hardening recalcule:
+
+```text
+Hardening maturity score: 58/100
+Niveau: MVP securise avec reserves K3S / pre-production controlee
+Statut: acceptable pour lab controle, insuffisant pour production exposee
+```
+
 Profil utilise:
 
 - outil: `aquasec/kube-bench:v0.15.6`;

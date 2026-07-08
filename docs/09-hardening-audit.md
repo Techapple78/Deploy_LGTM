@@ -14,15 +14,46 @@ Ce document ne remplace pas un scan runtime complet du cluster. Il donne un plan
 
 ## Score de maturite
 
-Ce score est une estimation pedagogique issue de l'audit documentaire et des scans statiques du depot. Il ne constitue pas un score officiel CIS, ANSSI ou K3S, car aucun calculateur runtime complet n'a encore ete execute sur les noeuds et le control plane.
+Ce score est une estimation pedagogique issue de l'audit documentaire, des scans statiques du depot et du benchmark runtime `kube-bench` execute en SEC-1. Il ne constitue pas un score officiel CIS, ANSSI ou K3S.
 
 ```text
-Hardening maturity score: 62/100
-Niveau: MVP securise / pre-production
+Hardening maturity score: 58/100
+Niveau: MVP securise avec reserves K3S / pre-production controlee
 Statut: acceptable pour lab controle, insuffisant pour production exposee
 ```
 
-Le score devra etre recalcule apres execution d'un audit runtime avec un outil adapte, par exemple `kube-bench`, CIS-CAT Pro ou le K3S CIS Self Assessment.
+Justification apres `kube-bench`:
+
+- points forts: GitOps structure, CI, Sealed Secrets, PSA baseline, Kyverno en audit, NetworkPolicies, application Phase 5 validee avec LGTM;
+- points faibles: `25 FAIL` kube-bench dont plusieurs controles control plane haute priorite, `66 WARN` a qualifier, audit logging K3S et encryption at rest non finalises;
+- decision: le score passe de `62/100` a `58/100`, car l'audit runtime remplace l'hypothese documentaire par des ecarts concrets sur le socle K3S.
+
+Le detail des resultats runtime est publie dans [reports/98-kube-bench-results.md](reports/98-kube-bench-results.md).
+
+### Historique du score
+
+| Iteration | Base d'evaluation | Score | Niveau | Statut | Decision |
+| --- | --- | ---: | --- | --- | --- |
+| Audit documentaire initial | Documentation, manifests GitOps, CI, Kyverno, PSA, NetworkPolicies | 62/100 | MVP securise / pre-production | Acceptable pour lab controle, insuffisant pour production exposee | Score provisoire avant benchmark runtime. |
+| SEC-1 kube-bench | Benchmark `k3s-cis-1.7` execute sur control plane et agents K3S | 58/100 | MVP securise avec reserves K3S / pre-production controlee | Acceptable pour lab controle, insuffisant pour production exposee | Score recalcule apres evidence runtime. |
+
+Lecture: le score baisse volontairement apres SEC-1, car les controles runtime remplacent une estimation documentaire par des ecarts mesures sur le socle K3S.
+
+### Historique kube-bench
+
+| Iteration | Date | Profil | PASS | FAIL | WARN | INFO | Commentaire |
+| --- | --- | --- | ---: | ---: | ---: | ---: | --- |
+| SEC-1 | 2026-07-08 | `k3s-cis-1.7` | 79 | 25 | 66 | 59 | Premiere mesure runtime complete apres Phase 5. |
+| SEC-2 | A planifier | `k3s-cis-1.7` | A mesurer | A mesurer | A mesurer | A mesurer | Mesure apres qualification PKI, audit logs, RBAC et encryption at rest. |
+| SEC-3 | A planifier | `k3s-cis-1.7` | A mesurer | A mesurer | A mesurer | A mesurer | Mesure apres durcissement production. |
+
+```mermaid
+xychart-beta
+  title "kube-bench SEC-1 - repartition des resultats"
+  x-axis ["PASS", "FAIL", "WARN", "INFO"]
+  y-axis "Nombre de controles" 0 --> 80
+  bar [79, 25, 66, 59]
+```
 
 ## HLD - Objectif de securite
 
