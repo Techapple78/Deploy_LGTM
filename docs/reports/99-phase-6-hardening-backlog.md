@@ -54,11 +54,11 @@ Chaque controle kube-bench `FAIL` ou `WARN` doit recevoir une decision:
 
 | ID | Sujet | Source kube-bench | Sortie attendue |
 | --- | --- | --- | --- |
-| P1.1 | Qualifier API server K3S | `1.2.1`, `1.2.6`, `1.2.7`, `1.2.8` | Anonymous auth, authorization mode et RBAC qualifies; vrais ecarts corriges. |
-| P1.2 | Qualifier admission controllers | `1.2.10`, `1.2.15` | `AlwaysAdmit` et `NodeRestriction` qualifies; decision documentee. |
-| P1.3 | Verifier certificats API server et kubelet | `1.2.4`, `1.2.5`, `1.2.24`, `1.2.26`, `1.2.27`, `4.2.9` | Cartographie PKI K3S documentee, permissions et arguments verifies. |
-| P1.4 | Definir audit logging K3S | `1.2.18` a `1.2.21`, `3.2.1`, `3.2.2` | Audit policy creee, logs produits, rotation configuree, collecte Alloy/Loki planifiee ou active. |
-| P1.5 | Evaluer encryption at rest | `1.2.29`, `1.2.30` | Decision sur encryption provider K3S et plan de rotation. |
+| P1.1 | Qualifier API server K3S | `1.2.1`, `1.2.6`, `1.2.7`, `1.2.8` | Fait: `anonymous-auth=false` et `authorization-mode=Node,RBAC` appliques. |
+| P1.2 | Qualifier admission controllers | `1.2.10`, `1.2.15` | Fait: `NodeRestriction` active, `AlwaysAdmit` desactive explicitement. |
+| P1.3 | Verifier certificats API server et kubelet | `1.2.4`, `1.2.5`, `1.2.24`, `1.2.26`, `1.2.27`, `4.2.9` | Partiel: permissions TLS cartographiees; confirmation kube-bench a rejouer. |
+| P1.4 | Definir audit logging K3S | `1.2.18` a `1.2.21`, `3.2.1`, `3.2.2` | Fait: audit policy appliquee, logs produits, smoke test valide. |
+| P1.5 | Evaluer encryption at rest | `1.2.29`, `1.2.30` | Fait: `secrets-encrypt` actif, cle `AES-CBC`, rechiffrement termine. |
 
 Critere de sortie P1:
 
@@ -71,11 +71,11 @@ Critere de sortie P1:
 | ID | Sujet | Source kube-bench | Sortie attendue |
 | --- | --- | --- | --- |
 | P2.1 | Durcir ciphers API server et kubelet | `1.2.31`, `4.2.12` | Liste de ciphers forte definie et testee, ou justification K3S documentee. |
-| P2.2 | Auditer RBAC cluster-admin | `5.1.1` | Usages `cluster-admin` inventaries et reduits. |
-| P2.3 | Auditer acces aux secrets | `5.1.2` | Roles ayant acces aux secrets justifies. |
-| P2.4 | Reduire wildcards RBAC | `5.1.3` | Wildcards identifies, reduits ou justifies. |
-| P2.5 | Controler creation de pods | `5.1.4` | Capacite `create pods` limitee aux acteurs necessaires. |
-| P2.6 | Consolider PSA/Kyverno | `5.2.x`, `5.3.x`, `5.4.x` | Passage progressif de certaines policies de `Audit` vers `Enforce`. |
+| P2.2 | Auditer RBAC cluster-admin | `5.1.1` | Fait: 3 bindings inventories, exceptions Traefik K3S documentees. |
+| P2.3 | Auditer acces aux secrets | `5.1.2` | Fait: roles sensibles inventories, reduction reportee apres analyse applicative. |
+| P2.4 | Reduire wildcards RBAC | `5.1.3` | Partiel: wildcards identifiees, reduction ArgoCD/Traefik a traiter separement. |
+| P2.5 | Controler creation de pods | `5.1.4` | Fait: roles sensibles identifies, surveillance audit ajoutee. |
+| P2.6 | Consolider PSA/Kyverno | `5.2.x`, `5.3.x`, `5.4.x` | Partiel: pas d'enforcement supplementaire avant remediation des violations. |
 
 Critere de sortie P2:
 
@@ -88,8 +88,8 @@ Critere de sortie P2:
 | ID | Sujet | Source kube-bench | Sortie attendue |
 | --- | --- | --- | --- |
 | P3.1 | Evaluer pod PID limit | `4.2.13` | Valeur cible definie ou justification de non-activation. |
-| P3.2 | Formaliser dashboard audit Kubernetes | Audit logs | Dashboard Grafana et requetes Loki pour actions sensibles. |
-| P3.3 | Alerting minimal securite | Audit logs, Kyverno | Alertes sur secrets, RBAC, pods privilegies, exec, admission. |
+| P3.2 | Formaliser dashboard audit Kubernetes | Audit logs | Fait: dashboard `Deploy_LGTM Kubernetes Security Audit` ajoute. |
+| P3.3 | Alerting minimal securite | Audit logs, Kyverno | Partiel: requetes d'alerting definies, activation apres observation 24h. |
 | P3.4 | Rejouer kube-bench | Tous | Nouveau rapport `100-kube-bench-after-hardening.md`. |
 
 Critere de sortie P3:
@@ -135,6 +135,10 @@ Phase 6 peut demarrer par le lot P1.
 
 Priorite immediate:
 
-1. qualifier les `FAIL` API server;
-2. qualifier le `FAIL` kubelet TLS `4.2.9`;
-3. concevoir l'audit logging K3S sans exposer de secrets dans Loki.
+1. rejouer `kube-bench` avec le profil `k3s-cis-1.7`;
+2. finaliser la decision `P1.3` sur les controles PKI/kubelet TLS;
+3. synchroniser ArgoCD pour deployer la collecte audit Loki et le dashboard Grafana;
+4. valider les requetes `{job="k3s-audit"}` dans Loki;
+5. sauvegarder et controler les artefacts de chiffrement K3S hors Git;
+6. ouvrir un chantier RBAC dedie Traefik/ArgoCD;
+7. corriger les violations Kyverno `runAsNonRoot` et `seccomp`.

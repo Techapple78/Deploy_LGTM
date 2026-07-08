@@ -1778,6 +1778,330 @@ dashboards:
           "version": 1,
           "weekStart": ""
         }
+    kubernetes-security-audit:
+      json: |
+        {
+          "annotations": {
+            "list": [
+              {
+                "builtIn": 1,
+                "datasource": {
+                  "type": "grafana",
+                  "uid": "-- Grafana --"
+                },
+                "enable": true,
+                "hide": true,
+                "iconColor": "rgba(0, 211, 255, 1)",
+                "name": "Annotations & Alerts",
+                "type": "dashboard"
+              }
+            ]
+          },
+          "editable": true,
+          "fiscalYearStartMonth": 0,
+          "graphTooltip": 0,
+          "id": null,
+          "links": [],
+          "panels": [
+            {
+              "datasource": "Loki",
+              "fieldConfig": {
+                "defaults": {
+                  "color": {
+                    "mode": "thresholds"
+                  },
+                  "thresholds": {
+                    "mode": "absolute",
+                    "steps": [
+                      {
+                        "color": "green",
+                        "value": null
+                      },
+                      {
+                        "color": "orange",
+                        "value": 1
+                      }
+                    ]
+                  },
+                  "unit": "short"
+                },
+                "overrides": []
+              },
+              "gridPos": {
+                "h": 4,
+                "w": 6,
+                "x": 0,
+                "y": 0
+              },
+              "id": 1,
+              "options": {
+                "colorMode": "background",
+                "graphMode": "area",
+                "justifyMode": "auto",
+                "orientation": "auto",
+                "reduceOptions": {
+                  "calcs": [
+                    "lastNotNull"
+                  ],
+                  "fields": "",
+                  "values": false
+                },
+                "textMode": "auto"
+              },
+              "targets": [
+                {
+                  "expr": "sum(count_over_time({job=\"k3s-audit\"} | json | objectRef_resource=\"secrets\" [$__range]))",
+                  "refId": "A"
+                }
+              ],
+              "title": "Secret Access Events",
+              "type": "stat"
+            },
+            {
+              "datasource": "Loki",
+              "fieldConfig": {
+                "defaults": {
+                  "unit": "short"
+                },
+                "overrides": []
+              },
+              "gridPos": {
+                "h": 4,
+                "w": 6,
+                "x": 6,
+                "y": 0
+              },
+              "id": 2,
+              "options": {
+                "colorMode": "value",
+                "graphMode": "area",
+                "justifyMode": "auto",
+                "orientation": "auto",
+                "reduceOptions": {
+                  "calcs": [
+                    "lastNotNull"
+                  ],
+                  "fields": "",
+                  "values": false
+                },
+                "textMode": "auto"
+              },
+              "targets": [
+                {
+                  "expr": "sum(count_over_time({job=\"k3s-audit\"} | json | objectRef_resource=~\"clusterroles|clusterrolebindings|roles|rolebindings\" [$__range]))",
+                  "refId": "A"
+                }
+              ],
+              "title": "RBAC Events",
+              "type": "stat"
+            },
+            {
+              "datasource": "Loki",
+              "fieldConfig": {
+                "defaults": {
+                  "unit": "short"
+                },
+                "overrides": []
+              },
+              "gridPos": {
+                "h": 4,
+                "w": 6,
+                "x": 12,
+                "y": 0
+              },
+              "id": 3,
+              "options": {
+                "colorMode": "value",
+                "graphMode": "area",
+                "justifyMode": "auto",
+                "orientation": "auto",
+                "reduceOptions": {
+                  "calcs": [
+                    "lastNotNull"
+                  ],
+                  "fields": "",
+                  "values": false
+                },
+                "textMode": "auto"
+              },
+              "targets": [
+                {
+                  "expr": "sum(count_over_time({job=\"k3s-audit\"} | json | objectRef_subresource=~\"exec|attach|portforward\" [$__range]))",
+                  "refId": "A"
+                }
+              ],
+              "title": "Interactive Pod Access",
+              "type": "stat"
+            },
+            {
+              "datasource": "Loki",
+              "fieldConfig": {
+                "defaults": {
+                  "color": {
+                    "mode": "thresholds"
+                  },
+                  "thresholds": {
+                    "mode": "absolute",
+                    "steps": [
+                      {
+                        "color": "green",
+                        "value": null
+                      },
+                      {
+                        "color": "red",
+                        "value": 1
+                      }
+                    ]
+                  },
+                  "unit": "short"
+                },
+                "overrides": []
+              },
+              "gridPos": {
+                "h": 4,
+                "w": 6,
+                "x": 18,
+                "y": 0
+              },
+              "id": 4,
+              "options": {
+                "colorMode": "background",
+                "graphMode": "area",
+                "justifyMode": "auto",
+                "orientation": "auto",
+                "reduceOptions": {
+                  "calcs": [
+                    "lastNotNull"
+                  ],
+                  "fields": "",
+                  "values": false
+                },
+                "textMode": "auto"
+              },
+              "targets": [
+                {
+                  "expr": "sum(count_over_time({job=\"k3s-audit\"} | json | responseStatus_code=~\"4..|5..\" [$__range]))",
+                  "refId": "A"
+                }
+              ],
+              "title": "Denied / Error API Events",
+              "type": "stat"
+            },
+            {
+              "datasource": "Loki",
+              "fieldConfig": {
+                "defaults": {
+                  "unit": "eps"
+                },
+                "overrides": []
+              },
+              "gridPos": {
+                "h": 8,
+                "w": 12,
+                "x": 0,
+                "y": 4
+              },
+              "id": 5,
+              "options": {
+                "legend": {
+                  "displayMode": "table",
+                  "placement": "bottom"
+                },
+                "tooltip": {
+                  "mode": "multi",
+                  "sort": "none"
+                }
+              },
+              "targets": [
+                {
+                  "expr": "sum(rate({job=\"k3s-audit\"} | json [$__rate_interval])) by (verb)",
+                  "legendFormat": "{{verb}}",
+                  "refId": "A"
+                }
+              ],
+              "title": "API Events by Verb",
+              "type": "timeseries"
+            },
+            {
+              "datasource": "Loki",
+              "gridPos": {
+                "h": 12,
+                "w": 12,
+                "x": 12,
+                "y": 4
+              },
+              "id": 6,
+              "options": {
+                "dedupStrategy": "none",
+                "enableLogDetails": true,
+                "prettifyLogMessage": true,
+                "showCommonLabels": false,
+                "showLabels": true,
+                "showTime": true,
+                "sortOrder": "Descending",
+                "wrapLogMessage": true
+              },
+              "targets": [
+                {
+                  "expr": "{job=\"k3s-audit\"} | json | objectRef_resource=~\"secrets|clusterroles|clusterrolebindings|roles|rolebindings|pods\"",
+                  "refId": "A"
+                }
+              ],
+              "title": "Recent Sensitive Kubernetes API Events",
+              "type": "logs"
+            },
+            {
+              "datasource": "Loki",
+              "gridPos": {
+                "h": 8,
+                "w": 24,
+                "x": 0,
+                "y": 16
+              },
+              "id": 7,
+              "options": {
+                "dedupStrategy": "none",
+                "enableLogDetails": true,
+                "prettifyLogMessage": true,
+                "showCommonLabels": false,
+                "showLabels": true,
+                "showTime": true,
+                "sortOrder": "Descending",
+                "wrapLogMessage": true
+              },
+              "targets": [
+                {
+                  "expr": "{job=\"k3s-audit\"} | json | responseStatus_code=~\"4..|5..\"",
+                  "refId": "A"
+                }
+              ],
+              "title": "Denied and Error API Events",
+              "type": "logs"
+            }
+          ],
+          "refresh": "30s",
+          "schemaVersion": 39,
+          "tags": [
+            "deploy-lgtm",
+            "security",
+            "k3s",
+            "audit",
+            "loki"
+          ],
+          "templating": {
+            "list": []
+          },
+          "time": {
+            "from": "now-1h",
+            "to": "now"
+          },
+          "timepicker": {},
+          "timezone": "browser",
+          "title": "Deploy_LGTM Kubernetes Security Audit",
+          "uid": "deploy-lgtm-k8s-security-audit",
+          "version": 1,
+          "weekStart": ""
+        }
 
 resources:
   requests:

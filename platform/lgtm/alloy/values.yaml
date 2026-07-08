@@ -1,8 +1,19 @@
 controller:
   type: daemonset
+  volumes:
+    extra:
+      - name: k3s-audit-log
+        hostPath:
+          path: /var/log/kubernetes/audit
+          type: DirectoryOrCreate
 
 alloy:
   stabilityLevel: experimental
+  mounts:
+    extra:
+      - name: k3s-audit-log
+        mountPath: /var/log/kubernetes/audit
+        readOnly: true
   extraPorts:
     - name: otlp-grpc
       port: 4317
@@ -123,6 +134,19 @@ alloy:
         }
 
         forward_to = [loki.relabel.syslog.receiver]
+      }
+
+      loki.source.file "k3s_audit" {
+        targets = [
+          {
+            __path__    = "/var/log/kubernetes/audit/audit.log",
+            job         = "k3s-audit",
+            source_type = "kubernetes-audit",
+            node        = coalesce(sys.env("HOSTNAME"), constants.hostname),
+          },
+        ]
+
+        forward_to = [loki.write.default.receiver]
       }
 
       prometheus.remote_write "mimir" {
