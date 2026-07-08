@@ -138,6 +138,41 @@ Lors du lancement initial:
 
 Le flux `alloy -> API Kubernetes` est donc autorise explicitement par NetworkPolicy dans `observability`.
 
+## Execution du 2026-07-08
+
+Etat GitOps:
+
+- `phase5-telemetry`: `Synced` et `Healthy`;
+- `alloy`: `Synced` et `Healthy`;
+- `grafana`: `Synced` et `Healthy`;
+- `observability-network-policies`: `Synced` et `Healthy`.
+
+Validation runtime:
+
+- smoke test `scripts/phase5/Test-Phase5Telemetry.ps1`: OK;
+- `GET /healthz`: OK;
+- `GET /api/work`: OK, generation d'un `trace_id`;
+- `GET /api/error`: OK, erreur 500 controlee;
+- Mimir: OK sur `phase5_http_requests_total`;
+- Tempo: OK sur les traces du service `phase5-telemetry-app`;
+- Loki: OK avec `{namespace="phase5-telemetry"} |= "trace_id"`, `{pod=~"phase5-telemetry-app.*"} |= "trace_id"` et `{app="phase5-telemetry-app"} |= "trace_id"`.
+
+Correction appliquee pendant le lancement:
+
+- Alloy collectait bien les logs via `loki.source.kubernetes`, mais les logs de pods n'etaient pas etiquetes avec `namespace`, `pod`, `container` et `app`.
+- La configuration a ete alignee sur le modele officiel Grafana Alloy: `discovery.kubernetes` -> `discovery.relabel` -> `loki.source.kubernetes` -> `loki.write`.
+- Le filtrage `spec.nodeName` a ete ajoute pour qu'un pod Alloy en DaemonSet ne collecte que les pods de son noeud.
+- Apres redemarrage controle du DaemonSet Alloy, les logs Phase 5 sont visibles dans Loki avec les labels Kubernetes attendus.
+
+Point hardening observe:
+
+- Le redemarrage Alloy declenche un avertissement Pod Security Admission `restricted` sur les conteneurs du chart Alloy.
+- Ce point n'est pas bloquant pour la Phase 5, mais il doit rester dans le backlog de durcissement Helm values avant passage production exposee.
+
+Reference technique:
+
+- Grafana Alloy, collecte de logs Kubernetes: `https://grafana.com/docs/alloy/latest/collect/logs-in-kubernetes/`.
+
 ## Risques et limites
 
 - Le chemin MySQL reel n'est pas encore deploye: il necessite des credentials sous forme `SealedSecret`.
