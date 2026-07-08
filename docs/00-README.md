@@ -78,6 +78,7 @@ Lecture conseillee apres deploiement:
 | [reports/90-phase-2.md](reports/90-phase-2.md) | MVP deployable controle: outillage, versions, Terraform minimal, sync waves. | Historique |
 | [reports/91-phase-3.md](reports/91-phase-3.md) | Pre-deploiement controle: Sealed Secrets, generation, validation, Git local. | Historique |
 | [reports/96-phase-5-test-results.md](reports/96-phase-5-test-results.md) | Resultats de campagne Phase 5: unitaire, global, stress, charge courte et regression. | Validation |
+| [reports/97-kube-bench-benchmark-plan.md](reports/97-kube-bench-benchmark-plan.md) | Planification SEC-1 du benchmark kube-bench CIS/K3S avant durcissement production. | Securite |
 | [reports/](reports/) | Rapports de validation et de synchronisation. | Historique |
 
 Lecture conseillee pour comprendre les decisions passees:
@@ -140,6 +141,7 @@ flowchart TD
   Integrations --> AppDeploy[reports/94-phase-5-application-telemetry-deployment-plan.md]
   Integrations --> AppTest[reports/95-phase-5-test-plan.md]
   Integrations --> AppResults[reports/96-phase-5-test-results.md]
+  Sec --> KubeBench[reports/97-kube-bench-benchmark-plan.md]
 ```
 
 ## Parcours par profil

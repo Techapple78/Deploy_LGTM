@@ -137,7 +137,7 @@ Objectif:
 
 Rapport de planification:
 
-- a produire au lancement de l'iteration SEC-1, avant durcissement production.
+- [reports/97-kube-bench-benchmark-plan.md](reports/97-kube-bench-benchmark-plan.md)
 
 ### Phase 6 - Durcissement production
 
