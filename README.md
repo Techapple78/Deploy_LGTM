@@ -55,7 +55,8 @@ Le depot cible est `Techapple78/Deploy_LGTM`. Le cluster K3S est considere deja 
 |       |-- 93-application-telemetry-integration-plan.md
 |       |-- 94-phase-5-application-telemetry-deployment-plan.md
 |       |-- 96-phase-5-test-results.md
-|       `-- 97-kube-bench-benchmark-plan.md
+|       |-- 97-kube-bench-benchmark-plan.md
+|       `-- 98-kube-bench-results.md
 |-- gitops/argocd/
 |   |-- app-of-apps/root-app.yaml
 |   `-- apps/*.yaml

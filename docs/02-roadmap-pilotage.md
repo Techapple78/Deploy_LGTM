@@ -126,7 +126,7 @@ Rapport de planification:
 
 ### Iteration SEC-1 - Benchmark kube-bench
 
-Etat: planifiee.
+Etat: executee.
 
 Objectif:
 
@@ -138,6 +138,7 @@ Objectif:
 Rapport de planification:
 
 - [reports/97-kube-bench-benchmark-plan.md](reports/97-kube-bench-benchmark-plan.md)
+- [reports/98-kube-bench-results.md](reports/98-kube-bench-results.md)
 
 ### Phase 6 - Durcissement production
 
@@ -195,13 +196,13 @@ Regle simple:
 
 ## Prochaine iteration recommandee
 
-Iteration SEC-1:
+Phase 6:
 
-1. Confirmer le contexte Kubernetes cible.
-2. Choisir le mode d'execution `kube-bench`: Job Kubernetes ou execution locale par noeud.
-3. Executer le benchmark.
-4. Anonymiser les resultats avant publication.
-5. Publier `docs/reports/98-kube-bench-results.md`.
-6. Transformer les ecarts en backlog Phase 6.
+1. Qualifier les `FAIL` kube-bench control plane: applicable, accepte temporairement, non applicable K3S ou faux positif.
+2. Verifier kubelet TLS cert/key sur tous les noeuds.
+3. Definir audit logging K3S.
+4. Evaluer encryption at rest des secrets Kubernetes.
+5. Auditer RBAC: `cluster-admin`, secrets, wildcards et creation de pods.
+6. Consolider PSA/Kyverno et NetworkPolicies avant enforcement production.
 
 
