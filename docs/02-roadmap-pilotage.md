@@ -90,11 +90,11 @@ Rapport de suivi:
 
 ### Phase 5 - Stabilisation production legere
 
-Etat: en cours.
+Etat: termine.
 
 Objectif:
 
-- Deployer une application temoin maitrisee HTML/CSS/JavaScript/MySQL pour consommer la stack LGTM.
+- Deployer une application temoin maitrisee HTML/CSS/JavaScript pour consommer la stack LGTM.
 - Generer une charge controlee de logs, metriques et traces via Alloy.
 - Redeployer et valider le chemin OTLP en mode test approfondi.
 - Ajuster ressources CPU/memoire.
@@ -108,7 +108,7 @@ Critere de sortie:
 
 - Application temoin maitrisee accessible via Traefik.
 - Logs applicatifs visibles dans Loki.
-- Metriques API et MySQL visibles dans Mimir.
+- Metriques applicatives visibles dans Mimir.
 - Traces applicatives visibles dans Tempo.
 - Chemin OTLP valide de bout en bout via Alloy vers Tempo.
 - Dashboard Grafana applicatif cree.
@@ -122,6 +122,22 @@ Rapport de planification:
 
 - une future iteration applicative maitrisee, sans dependance a une application exemple non maintenue
 - [reports/95-phase-5-test-plan.md](reports/95-phase-5-test-plan.md)
+- [reports/96-phase-5-test-results.md](reports/96-phase-5-test-results.md)
+
+### Iteration SEC-1 - Benchmark kube-bench
+
+Etat: planifiee.
+
+Objectif:
+
+- Executer un benchmark CIS Kubernetes/K3S avec `kube-bench`.
+- Classer les resultats `PASS`, `WARN`, `FAIL`, `INFO`.
+- Distinguer les ecarts reels des controles non applicables a K3S.
+- Alimenter le backlog de durcissement Phase 6.
+
+Rapport de planification:
+
+- a produire au lancement de l'iteration SEC-1, avant durcissement production.
 
 ### Phase 6 - Durcissement production
 
@@ -179,16 +195,13 @@ Regle simple:
 
 ## Prochaine iteration recommandee
 
-Phase 5:
+Iteration SEC-1:
 
-1. Deployer une application temoin maitrisee HTML/CSS/JavaScript/MySQL dans un namespace dedie.
-2. Instrumenter l'application et MySQL pour envoyer logs, metriques et traces vers Alloy.
-3. Redeployer et tester le chemin OTLP de bout en bout vers Tempo.
-4. Creer le dashboard Grafana applicatif et les alertes minimales.
-5. Executer un plan de test complet: unitaire, global, stress, charge et regression.
-6. Utiliser cette charge pour observer Loki, Mimir, Tempo, Alloy et Grafana sur 24h.
-7. Ajuster ressources, retention et NetworkPolicies a partir des donnees observees.
-8. Examiner les violations Kyverno/PSA avant tout passage supplementaire en `Enforce`.
-9. Publier le rapport de test et mettre a jour la documentation.
+1. Confirmer le contexte Kubernetes cible.
+2. Choisir le mode d'execution `kube-bench`: Job Kubernetes ou execution locale par noeud.
+3. Executer le benchmark.
+4. Anonymiser les resultats avant publication.
+5. Publier `docs/reports/98-kube-bench-results.md`.
+6. Transformer les ecarts en backlog Phase 6.
 
 

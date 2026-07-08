@@ -48,6 +48,7 @@
 - Mimir contient les compteurs `phase5_http_requests_total` et `phase5_otlp_traces_sent_total`.
 - Tempo permet de retrouver des traces du service `phase5-telemetry-app`.
 - Grafana affiche le dashboard `Deploy_LGTM Phase 5 Telemetry Overview`.
+- Le rapport de resultats Phase 5 est publie dans [reports/96-phase-5-test-results.md](reports/96-phase-5-test-results.md).
 
 ## Securite
 

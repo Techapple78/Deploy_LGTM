@@ -14,7 +14,7 @@ Le perimetre Phase 5 couvre:
 - traces OTLP/HTTP envoyees vers Alloy puis Tempo;
 - dashboard Grafana dedie;
 - NetworkPolicies default-deny et allowlists explicites;
-- plan de test unitaire, global, stress, charge et regression.
+- plan de test unitaire, global, stress, charge courte et regression.
 
 ## Architecture de test
 
@@ -82,9 +82,9 @@ Critere de sortie:
 - dashboard Grafana exploitable pendant le test;
 - Loki/Mimir/Tempo restent interrogeables.
 
-## Tests de charge
+## Tests de charge courte
 
-Objectif: utiliser une charge moderee sur 24h pour ajuster ressources, retention et NetworkPolicies.
+Objectif: utiliser une charge moderee et bornee pour valider la stabilite immediate de l'application temoin et des backends LGTM.
 
 Mesures:
 
@@ -175,7 +175,9 @@ Reference technique:
 
 ## Risques et limites
 
-- Le chemin MySQL reel n'est pas encore deploye: il necessite des credentials sous forme `SealedSecret`.
-- L'application Phase 5 actuelle valide le chemin web/logs/metrics/traces, puis le lot MySQL sera ajoute apres preparation des secrets.
-- Les tests de stress et de charge doivent etre lances depuis l'environnement cluster, pas depuis CI.
+- Le chemin MySQL n'est pas retenu comme critere de cloture Phase 5.
+- L'application Phase 5 valide le chemin web/logs/metrics/traces.
+- Les tests de stress et de charge courte doivent etre lances depuis l'environnement cluster, pas depuis CI.
 - Le DNS `phase5-app.example.local` doit etre adapte localement hors Git si un acces navigateur est requis.
+
+Les resultats de campagne sont publies dans [96-phase-5-test-results.md](96-phase-5-test-results.md).

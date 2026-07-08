@@ -77,6 +77,7 @@ Lecture conseillee apres deploiement:
 | --- | --- | --- |
 | [reports/90-phase-2.md](reports/90-phase-2.md) | MVP deployable controle: outillage, versions, Terraform minimal, sync waves. | Historique |
 | [reports/91-phase-3.md](reports/91-phase-3.md) | Pre-deploiement controle: Sealed Secrets, generation, validation, Git local. | Historique |
+| [reports/96-phase-5-test-results.md](reports/96-phase-5-test-results.md) | Resultats de campagne Phase 5: unitaire, global, stress, charge courte et regression. | Validation |
 | [reports/](reports/) | Rapports de validation et de synchronisation. | Historique |
 
 Lecture conseillee pour comprendre les decisions passees:
@@ -100,6 +101,7 @@ Lecture conseillee pour integrer une application test:
 4. [reports/93-application-telemetry-integration-plan.md](reports/93-application-telemetry-integration-plan.md)
 5. [reports/94-phase-5-application-telemetry-deployment-plan.md](reports/94-phase-5-application-telemetry-deployment-plan.md)
 6. [reports/95-phase-5-test-plan.md](reports/95-phase-5-test-plan.md)
+7. [reports/96-phase-5-test-results.md](reports/96-phase-5-test-results.md)
 
 ## Architecture documentaire cible
 
@@ -137,6 +139,7 @@ flowchart TD
   Integrations --> AppReport[reports/93-application-telemetry-integration-plan.md]
   Integrations --> AppDeploy[reports/94-phase-5-application-telemetry-deployment-plan.md]
   Integrations --> AppTest[reports/95-phase-5-test-plan.md]
+  Integrations --> AppResults[reports/96-phase-5-test-results.md]
 ```
 
 ## Parcours par profil
@@ -176,7 +179,8 @@ flowchart TD
 3. [reports/93-application-telemetry-integration-plan.md](reports/93-application-telemetry-integration-plan.md)
 4. [reports/94-phase-5-application-telemetry-deployment-plan.md](reports/94-phase-5-application-telemetry-deployment-plan.md)
 5. [reports/95-phase-5-test-plan.md](reports/95-phase-5-test-plan.md)
-6. [12-validation-checklist.md](12-validation-checklist.md)
+6. [reports/96-phase-5-test-results.md](reports/96-phase-5-test-results.md)
+7. [12-validation-checklist.md](12-validation-checklist.md)
 
 ## Regles de maintien documentaire
 
