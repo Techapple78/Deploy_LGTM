@@ -24,7 +24,7 @@ kind: ClusterPolicy
 metadata:
   name: disallow-latest-tag
 spec:
-  validationFailureAction: Audit
+  validationFailureAction: Enforce
   background: true
   rules:
     - name: require-image-tag
@@ -49,7 +49,7 @@ kind: ClusterPolicy
 metadata:
   name: disallow-privileged-containers
 spec:
-  validationFailureAction: Audit
+  validationFailureAction: Enforce
   background: true
   rules:
     - name: disallow-privileged-containers

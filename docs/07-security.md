@@ -49,6 +49,27 @@ Le plan detaille avant l'iteration 4 est documente dans [08-security-hardening-p
 
 Les controles CI `lint`, `render`, `security` et `sbom` sont detailles dans [06-ci-workflows.md](06-ci-workflows.md).
 
+### Strategie d'enforcement Kyverno
+
+Le MVP utilise un modele d'enforcement Kyverno progressif.
+
+Policies actuellement en `Enforce`:
+
+- `disallow-privileged-containers`: bloque les conteneurs utilisant `securityContext.privileged: true`.
+- `disallow-latest-tag`: bloque les tags d'image mutables comme `:latest`.
+
+Policies encore en mode `Audit`:
+
+- `require-run-as-non-root`
+- `require-seccomp-runtime-default`
+- `disallow-host-namespaces`
+
+Cette approche applique volontairement les controles les plus critiques en premier, tout en gardant une friction operationnelle raisonnable pendant la phase MVP.
+
+Les policies restantes doivent passer progressivement en `Enforce` pendant la phase de stabilisation, apres analyse d'impact et mise a jour de la documentation contributeur.
+
+Voir [ADR-002](adr/002-kyverno-progressive-enforcement.md) pour la justification architecturale.
+
 ## Audit CIS / ANSSI - 2026-07-07
 
 ### Portee

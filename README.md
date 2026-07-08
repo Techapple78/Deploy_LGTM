@@ -40,6 +40,11 @@ Le depot cible est `Techapple78/Deploy_LGTM`. Le cluster K3S est considere deja 
 |   |-- 10-operations.md
 |   |-- 11-troubleshooting.md
 |   |-- 12-validation-checklist.md
+|   |-- adr/
+|   |   |-- 001-mvp-replication-storage.md
+|   |   |-- 002-kyverno-progressive-enforcement.md
+|   |   |-- 003-sealed-secrets-supply-chain.md
+|   |   `-- 004-netpol-default-deny-cidr.md
 |   |-- integrations/
 |   |   `-- 01-html-css-js-mysql-lgtm.md
 |   `-- reports/

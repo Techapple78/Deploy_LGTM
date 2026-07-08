@@ -1,0 +1,26 @@
+# CODEOWNERS pour Deploy_LGTM
+# Format: pattern owner
+
+# Zones sensibles securite
+platform/security/kyverno/          @Techapple78
+platform/security/network-policies/ @Techapple78
+secrets/sealed/                     @Techapple78
+
+# Zones GitOps et plateforme
+platform/lgtm/                      @Techapple78
+gitops/argocd/apps/                 @Techapple78
+gitops/argocd/app-of-apps/          @Techapple78
+
+# Documentation
+docs/                               @Techapple78
+CONTRIBUTING.md                     @Techapple78
+SECURITY.md                         @Techapple78
+
+# Infrastructure
+infra/                              @Techapple78
+
+# Workflows GitHub
+.github/workflows/                  @Techapple78
+
+# Ownership par defaut
+*                                   @Techapple78

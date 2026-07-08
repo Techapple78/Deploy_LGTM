@@ -31,14 +31,16 @@ Lecture conseillee pour un nouvel arrivant:
 | Document | Role | Niveau |
 | --- | --- | --- |
 | [04-network-flows.md](04-network-flows.md) | Cartographie HLD/LLD des flux reseau: Grafana, Loki, Mimir, Tempo, Alloy, ArgoCD, Kyverno, Sealed Secrets. | HLD/LLD |
+| [adr/](adr/) | Architecture Decision Records: stockage MVP, enforcement Kyverno, Sealed Secrets, NetworkPolicies. | ADR |
 | [06-ci-workflows.md](06-ci-workflows.md) | Fonctionnement des controles CI: lint, render, security, sbom. | LLD |
 | [05-bootstrap.md](05-bootstrap.md) | Demarrage outillage, Sealed Secrets, kubeseal, bootstrap local. | LLD |
 
 Lecture conseillee avant une modification GitOps:
 
 1. [04-network-flows.md](04-network-flows.md)
-2. [06-ci-workflows.md](06-ci-workflows.md)
-3. [05-bootstrap.md](05-bootstrap.md)
+2. [adr/](adr/)
+3. [06-ci-workflows.md](06-ci-workflows.md)
+4. [05-bootstrap.md](05-bootstrap.md)
 
 ### 3. Securite et durcissement
 
@@ -109,6 +111,7 @@ flowchart TD
 
   Start --> LLD[LLD technique]
   LLD --> Flows[04-network-flows.md]
+  LLD --> ADR[adr/]
   LLD --> CI[06-ci-workflows.md]
   LLD --> Bootstrap[05-bootstrap.md]
 

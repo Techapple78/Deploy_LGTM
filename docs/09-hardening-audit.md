@@ -12,6 +12,18 @@ Audit documentaire de l'etat actuel du projet `Deploy_LGTM`, sans modification d
 
 Ce document ne remplace pas un scan runtime complet du cluster. Il donne un plan de durcissement progressif.
 
+## Score de maturite
+
+Ce score est une estimation pedagogique issue de l'audit documentaire et des scans statiques du depot. Il ne constitue pas un score officiel CIS, ANSSI ou K3S, car aucun calculateur runtime complet n'a encore ete execute sur les noeuds et le control plane.
+
+```text
+Hardening maturity score: 62/100
+Niveau: MVP securise / pre-production
+Statut: acceptable pour lab controle, insuffisant pour production exposee
+```
+
+Le score devra etre recalcule apres execution d'un audit runtime avec un outil adapte, par exemple `kube-bench`, CIS-CAT Pro ou le K3S CIS Self Assessment.
+
 ## HLD - Objectif de securite
 
 L'objectif HLD est de rendre la plateforme LGTM exploitable sans ouvrir plus que necessaire:
