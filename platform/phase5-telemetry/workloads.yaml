@@ -1,0 +1,81 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: phase5-telemetry-app
+  namespace: phase5-telemetry
+  labels:
+    app.kubernetes.io/name: phase5-telemetry-app
+    app.kubernetes.io/part-of: deploy-lgtm
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: phase5-telemetry-app
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: phase5-telemetry-app
+        app.kubernetes.io/part-of: deploy-lgtm
+    spec:
+      securityContext:
+        fsGroup: 1000
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: app
+          image: node:20-alpine
+          imagePullPolicy: IfNotPresent
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+            readOnlyRootFilesystem: true
+            runAsGroup: 1000
+            runAsNonRoot: true
+            runAsUser: 1000
+          command:
+            - node
+            - /app/server.js
+          ports:
+            - name: http
+              containerPort: 3000
+          env:
+            - name: PORT
+              value: "3000"
+            - name: ENVIRONMENT
+              value: dev
+            - name: OTEL_SERVICE_NAME
+              value: phase5-telemetry-app
+            - name: OTLP_TRACES_URL
+              value: http://alloy.observability.svc.cluster.local:4318/v1/traces
+          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: http
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: http
+            initialDelaySeconds: 20
+            periodSeconds: 20
+          volumeMounts:
+            - name: app-source
+              mountPath: /app
+              readOnly: true
+            - name: tmp
+              mountPath: /tmp
+          resources:
+            requests:
+              cpu: 50m
+              memory: 96Mi
+            limits:
+              memory: 256Mi
+      volumes:
+        - name: app-source
+          configMap:
+            name: phase5-telemetry-source
+        - name: tmp
+          emptyDir: {}

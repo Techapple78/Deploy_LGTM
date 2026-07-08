@@ -54,6 +54,7 @@ Le depot cible est `Techapple78/Deploy_LGTM`. Le cluster K3S est considere deja 
 |       |-- 92-phase-4-first-gitops-sync.md
 |       |-- 93-application-telemetry-integration-plan.md
 |       |-- 94-phase-5-application-telemetry-deployment-plan.md
+|       `-- 95-phase-5-test-plan.md
 |-- gitops/argocd/
 |   |-- app-of-apps/root-app.yaml
 |   `-- apps/*.yaml
@@ -67,11 +68,13 @@ Le depot cible est `Techapple78/Deploy_LGTM`. Le cluster K3S est considere deja 
 |   |-- identity/keycloak-optional/README.md
 |   |-- lgtm/{grafana,loki,mimir,tempo,alloy}/values.yaml
 |   |-- networking/traefik/ingress-grafana.yaml
+|   |-- phase5-telemetry/
 |   `-- security/
 |       |-- kyverno/policies.yaml
 |       `-- sealed-secrets/install.yaml
 |-- scripts/
 |   |-- bootstrap/README.md
+|   |-- phase5/Test-Phase5Telemetry.ps1
 |   `-- import-secrets/
 |       |-- generate-sealed-secrets.ps1
 |       `-- import-from-cxxx.ps1

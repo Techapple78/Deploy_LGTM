@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: phase5-telemetry-app
+  namespace: phase5-telemetry
+  labels:
+    app.kubernetes.io/name: phase5-telemetry-app
+    app.kubernetes.io/part-of: deploy-lgtm
+spec:
+  type: ClusterIP
+  selector:
+    app.kubernetes.io/name: phase5-telemetry-app
+  ports:
+    - name: http
+      port: 3000
+      targetPort: http
+      protocol: TCP

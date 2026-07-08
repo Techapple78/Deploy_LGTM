@@ -90,6 +90,22 @@ flowchart LR
 - impossibilite d'exporter OTLP vers Alloy;
 - NetworkPolicies non definies.
 
+## Lancement effectif
+
+La Phase 5 est lancee avec un premier harnais applicatif maitrise:
+
+- namespace `phase5-telemetry`;
+- application `phase5-telemetry-app`;
+- logs JSON sur stdout;
+- metriques Prometheus sur `/metrics`;
+- traces OTLP/HTTP vers Alloy;
+- dashboard Grafana `Deploy_LGTM Phase 5 Telemetry Overview`;
+- NetworkPolicies dediees.
+
+Le lot MySQL reel reste a ajouter apres preparation d'un `SealedSecret` dedie pour les credentials. Aucun credential MySQL en clair ne doit etre introduit pour accelerer cette etape.
+
+Le plan de test complet est documente dans [95-phase-5-test-plan.md](95-phase-5-test-plan.md).
+
 ## Definition of Done
 
 - application maitrisee accessible via Traefik;

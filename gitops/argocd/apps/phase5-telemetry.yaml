@@ -1,0 +1,22 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: phase5-telemetry
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "41"
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/Techapple78/Deploy_LGTM.git
+    targetRevision: main
+    path: platform/phase5-telemetry
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: phase5-telemetry
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true

@@ -1,0 +1,214 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: phase5-telemetry-source
+  namespace: phase5-telemetry
+  labels:
+    app.kubernetes.io/name: phase5-telemetry-app
+    app.kubernetes.io/part-of: deploy-lgtm
+data:
+  server.js: |
+    const http = require('http');
+    const crypto = require('crypto');
+
+    const port = Number(process.env.PORT || 3000);
+    const serviceName = process.env.OTEL_SERVICE_NAME || 'phase5-telemetry-app';
+    const environment = process.env.ENVIRONMENT || 'dev';
+    const otlpTracesUrl = process.env.OTLP_TRACES_URL || 'http://alloy.observability.svc.cluster.local:4318/v1/traces';
+
+    const counters = {
+      requests: 0,
+      errors: 0,
+      tracesSent: 0,
+      traceFailures: 0,
+      startedAt: Date.now(),
+    };
+
+    function id(bytes) {
+      return crypto.randomBytes(bytes).toString('hex');
+    }
+
+    function log(level, message, fields = {}) {
+      const entry = {
+        timestamp: new Date().toISOString(),
+        level,
+        app: serviceName,
+        environment,
+        namespace: 'phase5-telemetry',
+        ...fields,
+        message,
+      };
+      console.log(JSON.stringify(entry));
+    }
+
+    function sendTrace(route, status, durationMs, traceId, spanId) {
+      const now = BigInt(Date.now()) * 1000000n;
+      const start = now - BigInt(Math.max(durationMs, 1)) * 1000000n;
+      const body = JSON.stringify({
+        resourceSpans: [
+          {
+            resource: {
+              attributes: [
+                { key: 'service.name', value: { stringValue: serviceName } },
+                { key: 'deployment.environment', value: { stringValue: environment } },
+              ],
+            },
+            scopeSpans: [
+              {
+                scope: { name: 'deploy-lgtm.phase5.telemetry' },
+                spans: [
+                  {
+                    traceId,
+                    spanId,
+                    name: route,
+                    kind: 2,
+                    startTimeUnixNano: start.toString(),
+                    endTimeUnixNano: now.toString(),
+                    attributes: [
+                      { key: 'http.route', value: { stringValue: route } },
+                      { key: 'http.response.status_code', value: { intValue: status } },
+                      { key: 'phase5.test', value: { stringValue: 'otlp-smoke' } },
+                    ],
+                    status: { code: status >= 500 ? 2 : 1 },
+                  },
+                ],
+              },
+            ],
+          },
+        ],
+      });
+
+      const target = new URL(otlpTracesUrl);
+      const req = http.request({
+        hostname: target.hostname,
+        port: target.port || 80,
+        path: target.pathname,
+        method: 'POST',
+        headers: {
+          'content-type': 'application/json',
+          'content-length': Buffer.byteLength(body),
+        },
+        timeout: 1500,
+      }, (res) => {
+        res.resume();
+        if (res.statusCode >= 200 && res.statusCode < 300) {
+          counters.tracesSent += 1;
+        } else {
+          counters.traceFailures += 1;
+          log('warn', 'otlp trace export returned non-success status', { status: res.statusCode, trace_id: traceId });
+        }
+      });
+
+      req.on('error', (err) => {
+        counters.traceFailures += 1;
+        log('warn', 'otlp trace export failed', { error: err.message, trace_id: traceId });
+      });
+      req.write(body);
+      req.end();
+    }
+
+    function metrics() {
+      const uptime = Math.floor((Date.now() - counters.startedAt) / 1000);
+      return [
+        '# HELP phase5_http_requests_total Total HTTP requests served by the Phase 5 telemetry app.',
+        '# TYPE phase5_http_requests_total counter',
+        `phase5_http_requests_total{app="${serviceName}",environment="${environment}"} ${counters.requests}`,
+        '# HELP phase5_http_errors_total Total synthetic HTTP errors served by the Phase 5 telemetry app.',
+        '# TYPE phase5_http_errors_total counter',
+        `phase5_http_errors_total{app="${serviceName}",environment="${environment}"} ${counters.errors}`,
+        '# HELP phase5_otlp_traces_sent_total Total OTLP traces sent successfully.',
+        '# TYPE phase5_otlp_traces_sent_total counter',
+        `phase5_otlp_traces_sent_total{app="${serviceName}",environment="${environment}"} ${counters.tracesSent}`,
+        '# HELP phase5_otlp_trace_failures_total Total OTLP trace export failures.',
+        '# TYPE phase5_otlp_trace_failures_total counter',
+        `phase5_otlp_trace_failures_total{app="${serviceName}",environment="${environment}"} ${counters.traceFailures}`,
+        '# HELP phase5_app_uptime_seconds Application uptime in seconds.',
+        '# TYPE phase5_app_uptime_seconds gauge',
+        `phase5_app_uptime_seconds{app="${serviceName}",environment="${environment}"} ${uptime}`,
+        '',
+      ].join('\n');
+    }
+
+    function html() {
+      return `<!doctype html>
+      <html lang="fr">
+        <head>
+          <meta charset="utf-8" />
+          <meta name="viewport" content="width=device-width,initial-scale=1" />
+          <title>Deploy_LGTM Phase 5 Telemetry</title>
+          <style>
+            body { font-family: system-ui, sans-serif; margin: 2rem; background: #111827; color: #e5e7eb; }
+            main { max-width: 840px; }
+            code { background: #1f2937; padding: .2rem .4rem; border-radius: .25rem; }
+            button { padding: .7rem 1rem; margin-right: .5rem; border: 0; border-radius: .35rem; background: #22c55e; color: #052e16; font-weight: 700; cursor: pointer; }
+            button.secondary { background: #f97316; color: #431407; }
+            pre { background: #030712; padding: 1rem; overflow: auto; border-radius: .5rem; }
+          </style>
+        </head>
+        <body>
+          <main>
+            <h1>Deploy_LGTM Phase 5 Telemetry</h1>
+            <p>Application maitrisee pour valider logs, metriques et traces OTLP via Alloy.</p>
+            <p><code>/metrics</code>, <code>/api/work</code>, <code>/api/error</code>, <code>/healthz</code></p>
+            <button onclick="call('/api/work')">Generer trafic nominal</button>
+            <button class="secondary" onclick="call('/api/error')">Generer erreur controlee</button>
+            <pre id="out">Pret.</pre>
+          </main>
+          <script>
+            async function call(path) {
+              const res = await fetch(path);
+              const text = await res.text();
+              document.getElementById('out').textContent = text;
+            }
+          </script>
+        </body>
+      </html>`;
+    }
+
+    const server = http.createServer((req, res) => {
+      const started = Date.now();
+      counters.requests += 1;
+      const traceId = id(16);
+      const spanId = id(8);
+
+      if (req.url === '/healthz') {
+        res.writeHead(200, { 'content-type': 'text/plain' });
+        res.end('ok\n');
+        return;
+      }
+
+      if (req.url === '/metrics') {
+        res.writeHead(200, { 'content-type': 'text/plain; version=0.0.4' });
+        res.end(metrics());
+        return;
+      }
+
+      if (req.url === '/api/error') {
+        counters.errors += 1;
+        const duration = Date.now() - started;
+        sendTrace('/api/error', 500, duration, traceId, spanId);
+        log('error', 'synthetic error generated', { route: '/api/error', status: 500, duration_ms: duration, trace_id: traceId });
+        res.writeHead(500, { 'content-type': 'application/json' });
+        res.end(JSON.stringify({ status: 'error', trace_id: traceId }) + '\n');
+        return;
+      }
+
+      if (req.url === '/api/work') {
+        const duration = Date.now() - started;
+        sendTrace('/api/work', 200, duration, traceId, spanId);
+        log('info', 'synthetic work completed', { route: '/api/work', status: 200, duration_ms: duration, trace_id: traceId });
+        res.writeHead(200, { 'content-type': 'application/json' });
+        res.end(JSON.stringify({ status: 'ok', trace_id: traceId }) + '\n');
+        return;
+      }
+
+      const duration = Date.now() - started;
+      sendTrace('/', 200, duration, traceId, spanId);
+      log('info', 'page served', { route: '/', status: 200, duration_ms: duration, trace_id: traceId });
+      res.writeHead(200, { 'content-type': 'text/html; charset=utf-8' });
+      res.end(html());
+    });
+
+    server.listen(port, () => {
+      log('info', 'phase5 telemetry app started', { port, otlp_traces_url: otlpTracesUrl });
+    });

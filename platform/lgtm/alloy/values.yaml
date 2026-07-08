@@ -84,6 +84,21 @@ alloy:
         }
       }
 
+      prometheus.scrape "phase5_telemetry_app" {
+        targets = [
+          {
+            "__address__" = "phase5-telemetry-app.phase5-telemetry.svc.cluster.local:3000",
+            "app" = "phase5-telemetry-app",
+            "environment" = "dev",
+            "namespace" = "phase5-telemetry",
+            "service" = "web",
+            "component" = "phase5-test",
+          },
+        ]
+        metrics_path = "/metrics"
+        forward_to   = [prometheus.remote_write.mimir.receiver]
+      }
+
       prometheus.scrape "pfsense_snmp_interfaces" {
         targets = [
           {

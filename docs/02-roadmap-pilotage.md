@@ -90,32 +90,38 @@ Rapport de suivi:
 
 ### Phase 5 - Stabilisation production legere
 
-Etat: planifiee.
+Etat: en cours.
 
 Objectif:
 
-- Deployer une application temoin HTML/CSS/JavaScript/MySQL pour consommer la stack LGTM.
+- Deployer une application temoin maitrisee HTML/CSS/JavaScript/MySQL pour consommer la stack LGTM.
 - Generer une charge controlee de logs, metriques et traces via Alloy.
+- Redeployer et valider le chemin OTLP en mode test approfondi.
 - Ajuster ressources CPU/memoire.
 - Confirmer StorageClass.
 - Ajouter sauvegarde cle Sealed Secrets.
 - Mettre Kyverno progressivement en `Enforce`.
 - Ajouter dashboards et alerting.
+- Lancer un plan de test complet: unitaire, global, stress, charge et regression.
 
 Critere de sortie:
 
-- Application temoin accessible via Traefik.
+- Application temoin maitrisee accessible via Traefik.
 - Logs applicatifs visibles dans Loki.
 - Metriques API et MySQL visibles dans Mimir.
 - Traces applicatives visibles dans Tempo.
+- Chemin OTLP valide de bout en bout via Alloy vers Tempo.
 - Dashboard Grafana applicatif cree.
 - Runbooks valides.
 - Restauration testee.
 - Alertes essentielles actives.
+- Rapport de plan de test complet publie: unitaire, global, stress, charge et regression.
+- Documentation a jour.
 
 Rapport de planification:
 
 - une future iteration applicative maitrisee, sans dependance a une application exemple non maintenue
+- [reports/95-phase-5-test-plan.md](reports/95-phase-5-test-plan.md)
 
 ### Phase 6 - Durcissement production
 
@@ -175,11 +181,14 @@ Regle simple:
 
 Phase 5:
 
-1. Deployer une application temoin HTML/CSS/JavaScript/MySQL dans un namespace dedie.
+1. Deployer une application temoin maitrisee HTML/CSS/JavaScript/MySQL dans un namespace dedie.
 2. Instrumenter l'application et MySQL pour envoyer logs, metriques et traces vers Alloy.
-3. Creer le dashboard Grafana applicatif et les alertes minimales.
-4. Utiliser cette charge pour observer Loki, Mimir, Tempo, Alloy et Grafana sur 24h.
-5. Ajuster ressources, retention et NetworkPolicies a partir des donnees observees.
-6. Examiner les violations Kyverno/PSA avant tout passage en `Enforce`.
+3. Redeployer et tester le chemin OTLP de bout en bout vers Tempo.
+4. Creer le dashboard Grafana applicatif et les alertes minimales.
+5. Executer un plan de test complet: unitaire, global, stress, charge et regression.
+6. Utiliser cette charge pour observer Loki, Mimir, Tempo, Alloy et Grafana sur 24h.
+7. Ajuster ressources, retention et NetworkPolicies a partir des donnees observees.
+8. Examiner les violations Kyverno/PSA avant tout passage supplementaire en `Enforce`.
+9. Publier le rapport de test et mettre a jour la documentation.
 
 

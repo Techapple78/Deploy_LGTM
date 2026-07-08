@@ -16,6 +16,7 @@ La stack est separee en cinq zones logiques:
 | GitOps | ArgoCD lit Git et applique l'etat desire. | Flux privilegie vers API Kubernetes, pas d'acces direct aux secrets en clair dans Git. |
 | Observabilite | Grafana, Loki, Mimir, Tempo, Alloy. | Default deny puis allowlist par flux metier. |
 | Admission et secrets | Kyverno, PSA, Sealed Secrets. | Controle admission et decryptage runtime des secrets. |
+| Tests Phase 5 | Application `phase5-telemetry-app`. | Validation controlee logs, metriques et traces OTLP. |
 | Services cluster | API Kubernetes, CoreDNS, Traefik, ServiceLB, registry, NTP. | Flux de plateforme minimaux et explicites. |
 
 ### Diagramme HLD
@@ -32,6 +33,11 @@ flowchart LR
   Alloy[Alloy DaemonSet] -->|Logs 3100| LokiGateway
   Alloy -->|Metrics remote write 8080 ou 80| MimirGateway
   Alloy -->|OTLP 4317/4318| Tempo
+
+  User -->|HTTP phase5-app| Phase5[phase5-telemetry-app]
+  Phase5 -->|stdout JSON| Alloy
+  Phase5 -->|/metrics 3000| Alloy
+  Phase5 -->|OTLP HTTP 4318| Alloy
 
   Loki[Loki statefulset + sidecars] -->|HTTPS 443 / 6443| KubeAPI[Kubernetes API]
   Kyverno[Kyverno] -->|HTTPS 443 / 6443| KubeAPI
@@ -65,6 +71,10 @@ Un flux n'est accepte que s'il a:
 | Logs | Alloy | Loki | TCP 3100/80 | Couvert |
 | Metriques | Alloy | Mimir | TCP 8080/80 | Couvert |
 | Traces | Alloy | Tempo | TCP 4317/4318/3100 | Couvert |
+| Phase 5 ingress | Traefik | phase5-telemetry-app | TCP 3000 | Couvert |
+| Phase 5 logs | phase5-telemetry-app | Alloy | stdout Kubernetes | Couvert |
+| Phase 5 metriques | Alloy | phase5-telemetry-app | TCP 3000 `/metrics` | Couvert |
+| Phase 5 traces OTLP | phase5-telemetry-app | Alloy | TCP 4318 | Couvert |
 | Regles Loki | Loki sidecar | API Kubernetes | TCP 443/6443 | Couvert |
 | DNS | Pods observability | CoreDNS | UDP/TCP 53 | Couvert |
 | Mimir interne | Mimir components | Mimir components | Selon chart | A observer |
@@ -113,6 +123,20 @@ Tempo recoit les traces OTLP et les rend consultables par Grafana. Le deploiemen
 | composants Tempo futurs | composants Tempo futurs | Distributor, ingester, querier, compactor selon architecture future. | A documenter si passage en mode distribue. |
 
 Etat NetworkPolicy actuel: `Alloy -> Tempo` et `Grafana -> Tempo` sont couverts. Aucun flux interne Tempo complexe n'est requis tant que la topologie reste simple.
+
+### Flux Phase 5 telemetry
+
+La Phase 5 ajoute une application temoin maitrisee pour tester la chaine LGTM de bout en bout sans dependre d'une application tierce non maintenue.
+
+| Source | Destination | Role | Sens securite |
+| --- | --- | --- | --- |
+| `traefik` | `phase5-telemetry-app` | Acces navigateur ou test HTTP. | Exposition controlee via Ingress. |
+| `phase5-telemetry-app` | stdout Kubernetes | Logs JSON applicatifs. | Collecte par Alloy via discovery Kubernetes. |
+| `alloy` | `phase5-telemetry-app` | Scrape Prometheus `/metrics`. | Validation Mimir et dashboard Phase 5. |
+| `phase5-telemetry-app` | `alloy` | Export OTLP/HTTP traces. | Validation Tempo via Alloy. |
+| `phase5-telemetry-app` | CoreDNS | Resolution DNS vers Alloy. | Necessaire au service discovery. |
+
+Etat NetworkPolicy actuel: le namespace `phase5-telemetry` est en default deny. Les policies autorisent DNS, Traefik vers l'application, Alloy vers `/metrics` et l'application vers Alloy en OTLP/HTTP 4318. Le namespace `observability` autorise reciproquement Alloy a recevoir OTLP et a scraper les metriques Phase 5.
 
 ### Flux ArgoCD
 
@@ -171,6 +195,7 @@ Les NetworkPolicies actuelles couvrent les flux critiques du MVP dans `observabi
 - Traefik vers Grafana;
 - Grafana vers Loki, Mimir et Tempo;
 - Alloy vers Loki, Mimir et Tempo;
+- Phase 5 vers Alloy OTLP et Alloy vers metriques Phase 5;
 - Loki vers l'API Kubernetes pour son sidecar de regles.
 
 Elles ne couvrent pas encore de facon exhaustive:

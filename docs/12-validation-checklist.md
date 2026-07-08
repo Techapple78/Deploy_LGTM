@@ -35,6 +35,20 @@
 - Les metriques arrivent dans Mimir.
 - Les traces OTLP arrivent dans Tempo.
 
+## Phase 5 telemetry
+
+- L'application ArgoCD `phase5-telemetry` est `Synced` et `Healthy`.
+- Le namespace `phase5-telemetry` existe.
+- Le pod `phase5-telemetry-app` est `Running`.
+- L'Ingress `phase5-app.example.local` route vers le service `phase5-telemetry-app`.
+- `GET /healthz` retourne `ok`.
+- `GET /api/work` genere un log JSON et un `trace_id`.
+- `GET /api/error` genere une erreur controlee visible dans Loki.
+- Mimir contient `up{app="phase5-telemetry-app"}`.
+- Mimir contient les compteurs `phase5_http_requests_total` et `phase5_otlp_traces_sent_total`.
+- Tempo permet de retrouver des traces du service `phase5-telemetry-app`.
+- Grafana affiche le dashboard `Deploy_LGTM Phase 5 Telemetry Overview`.
+
 ## Securite
 
 - Kyverno est en mode `Audit` pour le MVP.

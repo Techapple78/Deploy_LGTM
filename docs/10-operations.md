@@ -43,6 +43,36 @@ kubectl -n observability get secret grafana-admin -o jsonpath="{.data.admin-pass
 
 Les dashboards provisionnes dans le dossier Grafana `Deploy_LGTM` couvrent la stack LGTM et les integrations infra maintenues. L'ancien dashboard applicatif temoin a ete retire avec l'application externe non maintenue.
 
+Le dashboard Phase 5 est provisionne dans le meme dossier:
+
+```text
+Deploy_LGTM Phase 5 Telemetry Overview
+```
+
+L'application de test Phase 5 est exposee via Traefik avec le nom exemple:
+
+```text
+http://phase5-app.example.local
+```
+
+Pour un acces local sans DNS, utiliser un port-forward:
+
+```powershell
+kubectl -n phase5-telemetry port-forward svc/phase5-telemetry-app 3001:3000
+```
+
+Puis ouvrir:
+
+```text
+http://127.0.0.1:3001
+```
+
+Pour lancer les tests de fumee Phase 5:
+
+```powershell
+.\scripts\phase5\Test-Phase5Telemetry.ps1
+```
+
 ## Acces Loki et Mimir
 
 Loki et Mimir ne sont pas exposes publiquement. L'acces cible passe par Grafana et par les datasources provisionnees:
