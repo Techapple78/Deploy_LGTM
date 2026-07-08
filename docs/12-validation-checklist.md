@@ -43,7 +43,7 @@
 - L'Ingress `phase5-app.example.local` route vers le service `phase5-telemetry-app`.
 - `GET /healthz` retourne `ok`.
 - `GET /api/work` genere un log JSON et un `trace_id`.
-- `GET /api/error` genere une erreur controlee visible dans Loki.
+- `GET /api/error` genere une erreur controlee visible dans Loki via `{pod=~"phase5-telemetry-app.*"} |= "trace_id"`.
 - Mimir contient `up{app="phase5-telemetry-app"}`.
 - Mimir contient les compteurs `phase5_http_requests_total` et `phase5_otlp_traces_sent_total`.
 - Tempo permet de retrouver des traces du service `phase5-telemetry-app`.

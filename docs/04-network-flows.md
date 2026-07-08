@@ -75,6 +75,7 @@ Un flux n'est accepte que s'il a:
 | Phase 5 logs | phase5-telemetry-app | Alloy | stdout Kubernetes | Couvert |
 | Phase 5 metriques | Alloy | phase5-telemetry-app | TCP 3000 `/metrics` | Couvert |
 | Phase 5 traces OTLP | phase5-telemetry-app | Alloy | TCP 4318 | Couvert |
+| Discovery Kubernetes | Alloy | API Kubernetes | TCP 443/6443 | Couvert |
 | Regles Loki | Loki sidecar | API Kubernetes | TCP 443/6443 | Couvert |
 | DNS | Pods observability | CoreDNS | UDP/TCP 53 | Couvert |
 | Mimir interne | Mimir components | Mimir components | Selon chart | A observer |
@@ -135,8 +136,9 @@ La Phase 5 ajoute une application temoin maitrisee pour tester la chaine LGTM de
 | `alloy` | `phase5-telemetry-app` | Scrape Prometheus `/metrics`. | Validation Mimir et dashboard Phase 5. |
 | `phase5-telemetry-app` | `alloy` | Export OTLP/HTTP traces. | Validation Tempo via Alloy. |
 | `phase5-telemetry-app` | CoreDNS | Resolution DNS vers Alloy. | Necessaire au service discovery. |
+| `alloy` | API Kubernetes | Decouverte des pods et collecte des logs Kubernetes. | Necessaire aux logs applicatifs dans Loki. |
 
-Etat NetworkPolicy actuel: le namespace `phase5-telemetry` est en default deny. Les policies autorisent DNS, Traefik vers l'application, Alloy vers `/metrics` et l'application vers Alloy en OTLP/HTTP 4318. Le namespace `observability` autorise reciproquement Alloy a recevoir OTLP et a scraper les metriques Phase 5.
+Etat NetworkPolicy actuel: le namespace `phase5-telemetry` est en default deny. Les policies autorisent DNS, Traefik vers l'application, Alloy vers `/metrics` et l'application vers Alloy en OTLP/HTTP 4318. Le namespace `observability` autorise reciproquement Alloy a recevoir OTLP, a scraper les metriques Phase 5 et a joindre l'API Kubernetes pour la collecte des logs de pods.
 
 ### Flux ArgoCD
 

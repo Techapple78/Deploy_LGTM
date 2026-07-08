@@ -58,7 +58,7 @@ flowchart LR
 
 | Backend | Verification | Requete indicative |
 | --- | --- | --- |
-| Loki | logs JSON applicatifs visibles | `{namespace="phase5-telemetry", app="phase5-telemetry-app"} |= "trace_id"` |
+| Loki | logs JSON applicatifs visibles | `{pod=~"phase5-telemetry-app.*"} |= "trace_id"` |
 | Mimir | metriques scrapees par Alloy | `up{app="phase5-telemetry-app"}` |
 | Mimir | trafic applicatif | `rate(phase5_http_requests_total{app="phase5-telemetry-app"}[5m])` |
 | Tempo | traces recues via OTLP | recherche service `phase5-telemetry-app` |
@@ -127,6 +127,16 @@ Regression fonctionnelle attendue:
 - traces visibles dans Tempo;
 - dashboard Grafana non vide;
 - aucun secret en clair ajoute au repo.
+
+## Notes de validation runtime
+
+Lors du lancement initial:
+
+- Mimir expose bien `phase5_http_requests_total`;
+- Tempo retrouve des traces avec `rootServiceName=phase5-telemetry-app`;
+- Loki necessite que Alloy puisse interroger l'API Kubernetes pour decouvrir les pods et collecter leurs logs.
+
+Le flux `alloy -> API Kubernetes` est donc autorise explicitement par NetworkPolicy dans `observability`.
 
 ## Risques et limites
 

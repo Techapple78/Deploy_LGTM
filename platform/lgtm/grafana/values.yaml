@@ -358,7 +358,7 @@ dashboards:
               },
               "targets": [
                 {
-                  "expr": "{namespace=\"phase5-telemetry\", app=\"phase5-telemetry-app\"} |= \"trace_id\"",
+                  "expr": "{pod=~\"phase5-telemetry-app.*\"} |= \"trace_id\"",
                   "refId": "A"
                 }
               ],

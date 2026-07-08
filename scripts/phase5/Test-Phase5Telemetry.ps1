@@ -42,7 +42,7 @@ Invoke-Step "Generate nominal traffic" {
 }
 
 Invoke-Step "Generate controlled error" {
-    kubectl -n $Namespace exec deploy/$App -- wget -qO- http://127.0.0.1:3000/api/error
+    kubectl -n $Namespace exec deploy/$App -- sh -c "wget -qO- http://127.0.0.1:3000/api/error 2>/dev/null || true"
 }
 
 Invoke-Step "Application metrics sample" {
