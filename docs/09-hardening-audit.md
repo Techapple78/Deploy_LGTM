@@ -34,7 +34,7 @@ Le detail des resultats runtime est publie dans [reports/98-kube-bench-results.m
 
 | Iteration | Base d'evaluation | Score | Niveau | Statut | Decision |
 | --- | --- | ---: | --- | --- | --- |
-| Audit documentaire initial | Documentation, manifests GitOps, CI, Kyverno, PSA, NetworkPolicies | 62/100 | MVP securise / pre-production | Acceptable pour lab controle, insuffisant pour production exposee | Score provisoire avant benchmark runtime. |
+| SEC-0 audit documentaire | Documentation, manifests GitOps, CI, Kyverno, PSA, NetworkPolicies | 62/100 | MVP securise / pre-production | Acceptable pour lab controle, insuffisant pour production exposee | Score provisoire avant benchmark runtime. |
 | SEC-1 kube-bench | Benchmark `k3s-cis-1.7` execute sur control plane et agents K3S | 58/100 | MVP securise avec reserves K3S / pre-production controlee | Acceptable pour lab controle, insuffisant pour production exposee | Score recalcule apres evidence runtime. |
 
 Lecture: le score baisse volontairement apres SEC-1, car les controles runtime remplacent une estimation documentaire par des ecarts mesures sur le socle K3S.
@@ -43,6 +43,7 @@ Lecture: le score baisse volontairement apres SEC-1, car les controles runtime r
 
 | Iteration | Date | Profil | PASS | FAIL | WARN | INFO | Commentaire |
 | --- | --- | --- | ---: | ---: | ---: | ---: | --- |
+| SEC-0 | Non execute | Non applicable | Non mesure | Non mesure | Non mesure | Non mesure | Audit documentaire initial sans execution kube-bench. |
 | SEC-1 | 2026-07-08 | `k3s-cis-1.7` | 79 | 25 | 66 | 59 | Premiere mesure runtime complete apres Phase 5. |
 | SEC-2 | A planifier | `k3s-cis-1.7` | A mesurer | A mesurer | A mesurer | A mesurer | Mesure apres qualification PKI, audit logs, RBAC et encryption at rest. |
 | SEC-3 | A planifier | `k3s-cis-1.7` | A mesurer | A mesurer | A mesurer | A mesurer | Mesure apres durcissement production. |
