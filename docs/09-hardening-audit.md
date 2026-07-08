@@ -17,18 +17,18 @@ Ce document ne remplace pas un scan runtime complet du cluster. Il donne un plan
 Ce score est une estimation pedagogique issue de l'audit documentaire, des scans statiques du depot et du benchmark runtime `kube-bench` execute en SEC-1. Il ne constitue pas un score officiel CIS, ANSSI ou K3S.
 
 ```text
-Hardening maturity score: 58/100
-Niveau: MVP securise avec reserves K3S / pre-production controlee
-Statut: acceptable pour lab controle, insuffisant pour production exposee
+Hardening maturity score: 72/100
+Niveau: pre-production durcie avec reserves kubelet/RBAC/PSA
+Statut: acceptable pour exposition controlee interne, insuffisant pour production exposee
 ```
 
-Justification apres `kube-bench`:
+Justification apres Phase 6:
 
-- points forts: GitOps structure, CI, Sealed Secrets, PSA baseline, Kyverno en audit, NetworkPolicies, application Phase 5 validee avec LGTM;
-- points faibles: `25 FAIL` kube-bench dont plusieurs controles control plane haute priorite, `66 WARN` a qualifier, audit logging K3S et encryption at rest non finalises;
-- decision: le score passe de `62/100` a `58/100`, car l'audit runtime remplace l'hypothese documentaire par des ecarts concrets sur le socle K3S.
+- points forts: GitOps structure, CI, Sealed Secrets, PSA baseline, Kyverno, NetworkPolicies, audit logging K3S, encryption at rest activee, API server durci;
+- points faibles: `3 FAIL` control plane restants, `2 FAIL` kubelet recurrents par noeud, `53 WARN` control plane et politiques a qualifier, RBAC/PSA encore en reduction progressive;
+- decision: le score passe de `58/100` a `72/100`, car les ecarts API server, audit logs et encryption at rest sont corriges, mais le cluster conserve des reserves kubelet/RBAC/PSA avant production exposee.
 
-Le detail des resultats runtime est publie dans [reports/98-kube-bench-results.md](reports/98-kube-bench-results.md).
+Les resultats runtime sont publies dans [reports/98-kube-bench-results.md](reports/98-kube-bench-results.md) et [reports/102-kube-bench-after-phase-6.md](reports/102-kube-bench-after-phase-6.md).
 
 ### Historique du score
 
@@ -36,6 +36,7 @@ Le detail des resultats runtime est publie dans [reports/98-kube-bench-results.m
 | --- | --- | ---: | --- | --- | --- |
 | SEC-0 audit documentaire | Documentation, manifests GitOps, CI, Kyverno, PSA, NetworkPolicies | 62/100 | MVP securise / pre-production | Acceptable pour lab controle, insuffisant pour production exposee | Score provisoire avant benchmark runtime. |
 | SEC-1 kube-bench | Benchmark `k3s-cis-1.7` execute sur control plane et agents K3S | 58/100 | MVP securise avec reserves K3S / pre-production controlee | Acceptable pour lab controle, insuffisant pour production exposee | Score recalcule apres evidence runtime. |
+| SEC-2 Phase 6 | Benchmark post durcissement API server, audit logs et encryption at rest | 72/100 | Pre-production durcie avec reserves kubelet/RBAC/PSA | Acceptable pour exposition controlee interne, insuffisant pour production exposee | Score remonte apres reduction des FAIL control plane. |
 
 Lecture: le score baisse volontairement apres SEC-1, car les controles runtime remplacent une estimation documentaire par des ecarts mesures sur le socle K3S.
 
@@ -45,15 +46,15 @@ Lecture: le score baisse volontairement apres SEC-1, car les controles runtime r
 | --- | --- | --- | ---: | ---: | ---: | ---: | --- |
 | SEC-0 | Non execute | Non applicable | Non mesure | Non mesure | Non mesure | Non mesure | Audit documentaire initial sans execution kube-bench. |
 | SEC-1 | 2026-07-08 | `k3s-cis-1.7` | 79 | 25 | 66 | 59 | Premiere mesure runtime complete apres Phase 5. |
-| SEC-2 | A planifier | `k3s-cis-1.7` | A mesurer | A mesurer | A mesurer | A mesurer | Mesure apres qualification PKI, audit logs, RBAC et encryption at rest. |
+| SEC-2 | 2026-07-08 | `k3s-cis-1.7` | 60 | 3 | 53 | 15 | Mesure control plane apres Phase 6; agents: `14/2/2/5` chacun. |
 | SEC-3 | A planifier | `k3s-cis-1.7` | A mesurer | A mesurer | A mesurer | A mesurer | Mesure apres durcissement production. |
 
 ```mermaid
 xychart-beta
-  title "kube-bench SEC-1 - repartition des resultats"
-  x-axis ["PASS", "FAIL", "WARN", "INFO"]
+  title "kube-bench control plane - SEC-1 vs SEC-2"
+  x-axis ["SEC-1 PASS", "SEC-1 FAIL", "SEC-1 WARN", "SEC-1 INFO", "SEC-2 PASS", "SEC-2 FAIL", "SEC-2 WARN", "SEC-2 INFO"]
   y-axis "Nombre de controles" 0 --> 80
-  bar [79, 25, 66, 59]
+  bar [79, 25, 66, 59, 60, 3, 53, 15]
 ```
 
 ## HLD - Objectif de securite

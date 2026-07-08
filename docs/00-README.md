@@ -83,6 +83,7 @@ Lecture conseillee apres deploiement:
 | [reports/99-phase-6-hardening-backlog.md](reports/99-phase-6-hardening-backlog.md) | Backlog Phase 6 avec criteres de sortie kube-bench. | Securite |
 | [reports/100-phase-6-hardening-execution.md](reports/100-phase-6-hardening-execution.md) | Application du backlog Phase 6 cote depot: audit logging, encryption, scripts et runbook. | Securite |
 | [reports/101-phase-6-p2-p3-security-ops.md](reports/101-phase-6-p2-p3-security-ops.md) | Qualification P2/P3: RBAC, Kyverno/PSA, collecte audit Loki, dashboard Grafana et alerting minimal. | Securite |
+| [reports/102-kube-bench-after-phase-6.md](reports/102-kube-bench-after-phase-6.md) | Benchmark kube-bench post Phase 6 et comparaison avec SEC-1. | Securite |
 | [runbooks/01-k3s-phase-6-hardening.md](runbooks/01-k3s-phase-6-hardening.md) | Procedure d'application, verification et rollback des changements K3S Phase 6. | Exploitation securite |
 | [reports/](reports/) | Rapports de validation et de synchronisation. | Historique |
 
@@ -132,6 +133,7 @@ flowchart TD
   Sec --> Phase6Runbook[runbooks/01-k3s-phase-6-hardening.md]
   Sec --> Phase6Execution[reports/100-phase-6-hardening-execution.md]
   Sec --> Phase6P2P3[reports/101-phase-6-p2-p3-security-ops.md]
+  Sec --> Phase6Bench[reports/102-kube-bench-after-phase-6.md]
 
   Start --> Ops[Exploitation]
   Ops --> Operations[10-operations.md]
